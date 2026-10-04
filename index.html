@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Mathematics and Algorithms for Machine Learning</title>
+<title>Mathematics, Algorithms and Architectures for Machine Learning</title>
 <link rel="stylesheet" href="katex/katex.min.css">
 <style>
   :root { --ink: #111; --muted: #555; --rule: #ddd; --accent: #1f5fbf; }
-  html { scroll-behavior: smooth; scroll-padding-top: 12px; }
+  html { scroll-padding-top: 12px; }
   body { margin: 0; background: #fff; color: var(--ink); font-family: "Times New Roman", Times, serif; font-size: 19px; line-height: 1.55; }
   .wrap { display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 40px; max-width: 1260px; margin: 0 auto; padding: 0 20px; }
   nav.toc { position: sticky; top: 0; height: 100vh; overflow-y: auto; padding: 20px 12px 40px 0; border-right: 1px solid var(--rule); font-size: 15px; line-height: 1.35; }
@@ -19,6 +19,12 @@
   nav.toc .t-h4 { padding-left: 12px; color: #333; }
   nav.toc .lvl { display: none; }
   nav.toc .num { color: #777; margin-right: .45em; }
+  nav.toc .t-layer { margin: 18px 0 -6px; padding-top: 8px; border-top: 1px solid var(--rule); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+  nav.toc a.cur { color: var(--accent); }
+  #resume { display: block; margin: 16px 0 4px; color: var(--accent); text-decoration: none; }
+  #resume[hidden] { display: none; }
+  nav.pn { display: flex; justify-content: space-between; gap: 16px; margin-top: 3em; padding-top: 1em; border-top: 1px solid var(--rule); }
+  nav.pn a { color: var(--accent); text-decoration: none; }
   main { max-width: 780px; padding: 32px 0 120px; min-width: 0; }
   .byline { color: var(--muted); margin-top: 0; }
   h1 { font-size: 2.3em; line-height: 1.15; margin: 0 0 .3em; font-weight: normal; }
@@ -63,6 +69,9 @@
   code, pre { font-family: "Courier New", Courier, monospace; font-size: .88em; }
   ol li, ul li { margin: .2em 0; }
   .legend span { margin-right: 10px; }
+  .quiz { border-top: 1px solid var(--rule); margin-top: 2.4em; padding-top: .4em; }
+  .quiz summary { cursor: pointer; margin: .45em 0; }
+  .quiz details > p { margin: .2em 0 .9em 1.2em; }
   @media (max-width: 920px) {
     .wrap { grid-template-columns: 1fr; gap: 0; }
     nav.toc { position: static; height: auto; max-height: none; border-right: 0; border-bottom: 1px solid var(--rule); padding-right: 0; }
@@ -72,19 +81,19 @@
 </head>
 <body>
 <div class="wrap">
-<nav class="toc"><details open><summary>Contents</summary><div id="toc"></div></details></nav>
+<nav class="toc"><a id="resume" hidden></a><details open><summary>Contents</summary><div id="toc"></div></details></nav>
 <main>
 <header>
-<h1>Mathematics and Algorithms for Machine Learning</h1>
+<h1>Mathematics, Algorithms and Architectures for Machine Learning</h1>
 <p class="byline">Built by <a href="https://github.com/Dararoth-ML">Eng Dararoth</a></p>
-<p>A study notebook for engineers. Part I teaches the mathematics, starting from functions and ending at information theory. Parts II to IX use that mathematics to explain the algorithms: classic machine learning, deep learning, natural language processing, computer vision, generative models, reinforcement learning, graph networks and geospatial analysis.</p>
-<p>Each topic has a short explanation, the key formulas, a figure you can play with, and two collapsed Python blocks: one built from scratch, one that calls a standard library. Change a slider, drag a point, and watch the formula respond; open a code block when you need the implementation. Read it from top to bottom: each topic builds on the ones above it, and each chapter runs from easy to hard. The labels tell you the level:</p>
+<p>A study notebook for engineers. Part I teaches the mathematics, starting from functions and ending at information theory. Parts II to IX use that mathematics to explain the algorithms: classic machine learning, deep learning, natural language processing, computer vision, generative models, reinforcement learning, graph networks and geospatial analysis. Part X turns to architectures: named networks such as ResNet, U-Net and Llama, and how each one wires those algorithms together.</p>
+<p>Each topic has a short explanation, the key formulas, a figure you can play with, and two collapsed Python blocks: one built from scratch, one that calls a standard library. Change a slider, drag a point, and watch the formula respond; open a code block when you need the implementation. Read it from top to bottom: each topic builds on the ones above it, and each chapter runs from easy to hard. Each part opens as its own page with a link to the next part at its foot, and a "Continue at" link above the contents takes you back to the last topic you read. The labels tell you the level:</p>
 <p class="legend"><span class="lvl l1">Beginner</span> <span class="lvl l2">Intermediate</span> <span class="lvl l3">Advanced</span> <span class="lvl l4">Expert</span></p>
 <p>Part I teaches the mathematics before any algorithm. If an Advanced or Expert math topic feels heavy on a first pass, skim it, keep going, and return when an algorithm links back to it. Numbers in parentheses, such as (<a class="ref" href="#ridge"></a>), are links to the topic they name. Notes marked <b>Analogy</b> compare the harder ideas with everyday things, and each part ends with GitHub projects you can build. The notation table at the end lists every symbol.</p>
 <p>The code runs on Python 3.10 or later. <code>pip install numpy scipy sympy scikit-learn torch torchvision</code> covers most blocks; the others name their library on the block, such as gensim, transformers, stable-baselines3 or geopandas.</p>
 </header>
 
-<h2 id="part-math">Part I. Mathematics</h2>
+<h2 id="part-math" data-layer="Mathematics">Part I. Mathematics</h2>
 
 <h3 id="ch-found"><span class="num"></span>Foundations</h3>
 
@@ -192,6 +201,12 @@ print(math.fsum([0.1] * 10), sum([0.1] * 10))  # fsum avoids round-off
 </code></pre></details>
 
 
+
+<div class="quiz"><p><b>Check yourself.</b> Answer each question before you open it.</p>
+<details><summary>With $f(x) = 2x + 1$ and $g(x) = x^2$, compute $f(g(3))$ and $g(f(3))$.</summary><p>$f(g(3)) = 2\cdot 9 + 1 = 19$ and $g(f(3)) = 7^2 = 49$. The inner function runs first, so swapping the order changes the result.</p></details>
+<details><summary>Why do you add log-probabilities instead of multiplying probabilities?</summary><p>A product of thousands of numbers below 1 underflows to 0 in floating point. The log turns the product into a sum that stays in range, and because the log is increasing, the parameters that maximize the sum also maximize the product.</p></details>
+<details><summary>The numbers 2, 4 and 9 have mean 5. What is $\sum_i (x_i - \bar x)$?</summary><p>$(2 - 5) + (4 - 5) + (9 - 5) = 0$. Deviations from the mean cancel, which makes the mean the balance point.</p></details>
+</div>
 
 <h3 id="ch-linalg"><span class="num"></span>Linear algebra</h3>
 
@@ -396,6 +411,12 @@ print(Z.shape)
 
 
 
+<div class="quiz"><p><b>Check yourself.</b> Answer each question before you open it.</p>
+<details><summary>Two vectors have dot product 0.9 and lengths 1 and 3. What is their cosine similarity?</summary><p>$\cos\theta = 0.9/(1\cdot 3) = 0.3$.</p></details>
+<details><summary>Why does an L1 penalty (Lasso) set some weights to zero while an L2 penalty (ridge) shrinks them?</summary><p>The L1 ball is a diamond with corners on the axes, and the loss contours tend to touch it at a corner, where some coordinates are 0. The L2 ball is round, so the touching point has no reason to sit on an axis.</p></details>
+<details><summary>A matrix has eigenvalues 3 and 0.5. What happens to a vector after you apply the matrix 10 times?</summary><p>Its component along the first eigenvector grows by $3^{10} \approx 59{,}000$ and the other shrinks by $0.5^{10} \approx 0.001$, so the vector turns toward the first eigenvector. Power iteration and PageRank rely on this.</p></details>
+</div>
+
 <h3 id="ch-calc"><span class="num"></span>Calculus</h3>
 
 <h4 id="derivative"><span class="num"></span>The derivative <span class="lvl l1">Beginner</span></h4>
@@ -592,6 +613,12 @@ print(sp.hessian(f, (x, y)), sp.Matrix([f]).jacobian([x, y]))
 </code></pre></details>
 
 
+
+<div class="quiz"><p><b>Check yourself.</b> Answer each question before you open it.</p>
+<details><summary>Differentiate $h(w) = \sigma(wx)$ with respect to $w$, given $\sigma'(z) = \sigma(z)\big(1 - \sigma(z)\big)$.</summary><p>By the chain rule, $h'(w) = \sigma(wx)\big(1 - \sigma(wx)\big)\,x$.</p></details>
+<details><summary>What is the gradient of $f(x, y) = x^2 + 3y$ at $(1, 2)$, and which way should gradient descent step?</summary><p>$\nabla f = (2x, 3) = (2, 3)$. That direction increases $f$ fastest, so gradient descent steps along $-(2, 3)$.</p></details>
+<details><summary>What does the Hessian tell you at a point where the gradient is zero?</summary><p>Its curvature decides the kind of point: a positive definite Hessian means a minimum, a negative definite one a maximum, and eigenvalues of both signs a saddle.</p></details>
+</div>
 
 <h3 id="ch-prob"><span class="num"></span>Probability</h3>
 
@@ -864,6 +891,12 @@ print(max(grid, key=post.pdf))                  # MAP = peak of the posterior
 
 
 
+<div class="quiz"><p><b>Check yourself.</b> Answer each question before you open it.</p>
+<details><summary>A test catches 99% of sick people and flags 1% of healthy ones by mistake, and 1 person in 1,000 is sick. You test positive. What is the chance that you are sick?</summary><p>By Bayes' theorem, $\frac{0.99\cdot 0.001}{0.99\cdot 0.001 + 0.01\cdot 0.999} \approx 0.09$. About 9%, because healthy people outnumber sick ones 999 to 1.</p></details>
+<details><summary>You average $n$ independent measurements, each with standard deviation $\sigma$. How large is the error of the average?</summary><p>Its standard deviation is $\sigma/\sqrt n$, so four times the data halves the error. By the central limit theorem the average is close to Gaussian.</p></details>
+<details><summary>A coin shows 7 heads in 10 tosses. What is the maximum likelihood estimate of $P(\text{heads})$, and the MAP estimate with a Beta(2, 2) prior?</summary><p>MLE: $7/10 = 0.7$. MAP: the posterior is Beta(9, 5), whose mode is $(9 - 1)/(9 + 5 - 2) = 8/12 \approx 0.67$. The prior pulls the estimate toward 0.5.</p></details>
+</div>
+
 <h3 id="ch-stats"><span class="num"></span>Statistics</h3>
 
 <h4 id="biasvar"><span class="num"></span>Bias, variance and overfitting <span class="lvl l2">Intermediate</span></h4>
@@ -947,13 +980,18 @@ print(boot.confidence_interval)                         # makes no normality ass
 
 
 
+<div class="quiz"><p><b>Check yourself.</b> Answer each question before you open it.</p>
+<details><summary>As you raise a polynomial's degree, the training error keeps falling, but the test error rises after degree 4. What is happening?</summary><p>Overfitting: past degree 4 the extra flexibility fits the noise, and the variance grows faster than the bias falls. Choose the degree with the lowest cross-validated error.</p></details>
+<details><summary>A test gives $p = 0.03$. Does that mean a 3% chance that the null hypothesis is true?</summary><p>No. It is the probability of data at least this extreme if the null hypothesis were true. It does not give the probability of the hypothesis itself.</p></details>
+</div>
+
 <h3 id="ch-opt"><span class="num"></span>Optimization</h3>
 
 <h4 id="gd1d"><span class="num"></span>Gradient descent <span class="lvl l1">Beginner</span></h4>
 <p>To minimize a function, start somewhere, look at the slope, and take a step downhill. Repeat:</p>
 $$x_{t+1} = x_t - \eta\, f'(x_t) \qquad\text{or, with many weights,}\qquad \mathbf w_{t+1} = \mathbf w_t - \eta\,\nabla L(\mathbf w_t)$$
 <p>The learning rate $\eta$ sets the step size. Too small and you crawl. Too large and you overshoot the valley and bounce, or fly off to infinity. For $f(x) = x^2$, each step multiplies $x$ by $(1 - 2\eta)$, so the method converges only when $0 \lt \eta \lt 1$.</p>
-<p>On a bumpy function, gradient descent stops in the first valley it reaches, a <i>local minimum</i>. <i>Stochastic</i> gradient descent (SGD) estimates the gradient from a random mini-batch of $B$ examples instead of the full dataset. Each step costs far less, and the noise can help it escape shallow minima.</p>
+<p>On a bumpy function, gradient descent stops in the first valley it reaches, a <i>local minimum</i>. <i>Stochastic</i> gradient descent (SGD) estimates the gradient from a random mini-batch of $B$ examples instead of the full dataset. Each step costs far less, and the noise can help it escape shallow minima. One pass through all $n$ training examples, $n/B$ steps, is an <i>epoch</i>.</p>
 <p class="an"><b>Analogy.</b> You walk down a mountain in fog: feel the slope under your feet, take a step downhill, repeat. The learning rate is your stride. Tiny strides take forever; giant strides jump over the valley.</p>
 <div class="viz" data-viz="gd1d"><p class="cap">Press Step or Run. Try $\eta = 0.1$ (smooth), $\eta = 0.9$ (zig-zag) and $\eta = 1.05$ (divergence) on the bowl. On the bumpy curve, move the start point and see which valley you land in.</p></div>
 <p class="ml"><b>In ML:</b> neural networks train with variants of this loop (<a class="ref" href="#optimizers"></a>).</p>
@@ -1080,6 +1118,12 @@ print(minimize(f, [0.0, 0.0], constraints=[inside], method="SLSQP").x)  # KKT: t
 
 
 
+<div class="quiz"><p><b>Check yourself.</b> Answer each question before you open it.</p>
+<details><summary>For $f(x) = x^2$, which learning rates make gradient descent converge, and what happens at $\eta = 1$?</summary><p>Each step multiplies $x$ by $1 - 2\eta$, so it converges for $0 \lt \eta \lt 1$. At $\eta = 1$ the factor is $-1$, and $x$ flips sign forever without shrinking.</p></details>
+<details><summary>Why is convexity good news for optimization?</summary><p>In a convex function each local minimum is a global minimum, so gradient descent can't get stuck in a worse valley. Linear and logistic regression have convex losses; neural networks don't.</p></details>
+<details><summary>Newton's method jumps to the minimum of a quadratic in one step. Why don't neural networks train with it?</summary><p>It needs the Hessian, a $p\times p$ matrix: for $p = 10^9$ parameters that is $10^{18}$ numbers to store and invert. Adam keeps a cheap scale for each parameter instead.</p></details>
+</div>
+
 <h3 id="ch-info"><span class="num"></span>Information theory</h3>
 
 <h4 id="entropy"><span class="num"></span>Entropy <span class="lvl l2">Intermediate</span></h4>
@@ -1110,7 +1154,7 @@ $$H(p, q) = -\sum_x p(x)\log q(x)$$
 <p>The extra cost over the best possible, $H(p)$, is the <i>Kullback–Leibler divergence</i>:</p>
 $$D_{\mathrm{KL}}(p\,\|\,q) = \sum_x p(x)\log\frac{p(x)}{q(x)} = H(p, q) - H(p) \;\ge\; 0$$
 <p>KL equals zero only when $q = p$, and it is asymmetric. $D_{\mathrm{KL}}(p\|q)$ explodes wherever $q$ puts almost no mass on outcomes that $p$ finds likely, so minimizing it over $q$ forces $q$ to cover all of $p$ (<i>mass-covering</i>). Minimizing $D_{\mathrm{KL}}(q\|p)$ lets $q$ lock onto one mode (<i>mode-seeking</i>).</p>
-<p>For a class label $y$, $p$ is one-hot and the cross-entropy reduces to $-\log q_y$, the standard classification loss. $H(p)$ doesn't depend on the model, so minimizing cross-entropy and minimizing KL give the same model. Between two Gaussians, KL has a closed form:</p>
+<p>For a class label $y$, $p$ is one-hot (1 for the true class, 0 for the others) and the cross-entropy reduces to $-\log q_y$, the standard classification loss. $H(p)$ doesn't depend on the model, so minimizing cross-entropy and minimizing KL give the same model. Between two Gaussians, KL has a closed form:</p>
 $$D_{\mathrm{KL}}\big(\mathcal N(\mu_1,\sigma_1^2)\,\|\,\mathcal N(\mu_2,\sigma_2^2)\big) = \log\frac{\sigma_2}{\sigma_1} + \frac{\sigma_1^2 + (\mu_1-\mu_2)^2}{2\sigma_2^2} - \frac12$$
 <p class="an"><b>Analogy.</b> You pack for a trip using forecast $q$ while the real weather follows $p$. Cross-entropy is the cost of packing by the wrong forecast, and KL divergence is the extra cost compared with packing by the true weather.</p>
 <div class="viz" data-viz="kl"><p class="cap">Blue: a two-bump target $p$. Red: a single Gaussian $q$. Move $q$ by hand, or press a button to fit it by minimizing one of the two KL directions. One fit spreads over both bumps; the other picks one bump.</p></div>
@@ -1144,7 +1188,87 @@ print(torch.distributions.kl_divergence(P, Q))
 
 
 
+<div class="quiz"><p><b>Check yourself.</b> Answer each question before you open it.</p>
+<details><summary>What is the entropy of a fair coin and of a fair 8-sided die, in bits?</summary><p>1 bit and 3 bits: $\log_2 2$ and $\log_2 8$.</p></details>
+<details><summary>Minimizing the cross-entropy $H(p, q)$ over $q$ minimizes which KL divergence, and why?</summary><p>$H(p, q) = H(p) + D_{\mathrm{KL}}(p\,\|\,q)$, and $H(p)$ doesn't depend on $q$, so it minimizes $D_{\mathrm{KL}}(p\,\|\,q)$.</p></details>
+<details><summary>Why isn't KL divergence a distance?</summary><p>It isn't symmetric, $D_{\mathrm{KL}}(p\,\|\,q) \ne D_{\mathrm{KL}}(q\,\|\,p)$ in general, and it fails the triangle inequality. It is zero when $p = q$ and positive otherwise.</p></details>
+</div>
+
 <h3 id="ch-num"><span class="num"></span>Numerical methods</h3>
+
+<h4 id="floats"><span class="num"></span>Floating-point numbers and quantization <span class="lvl l2">Intermediate</span></h4>
+<p>A computer stores a real number as a <i>float</i>: a sign bit $s$, an exponent $e$ and a fraction $m$, the mantissa. Together they stand for</p>
+$$x = (-1)^s \times 1.m \times 2^{\,e - \text{bias}}$$
+<p>The exponent sets the range and the mantissa sets the precision. With $p$ mantissa bits, neighboring floats near $x$ sit about $x\cdot2^{-p}$ apart, so rounding to the nearest float changes $x$ by a relative error below $2^{-p-1}$, whatever its size. The gap between 1 and the next float is the <i>machine epsilon</i>, $\epsilon = 2^{-p}$. Three formats matter in ML:</p>
+<div class="tablewrap"><table>
+<tr><th>Format</th><th>Sign, exponent, mantissa bits</th><th>Largest value</th><th>$\epsilon$</th><th>Typical use</th></tr>
+<tr><td>float32</td><td>1, 8, 23</td><td>$3.4\times10^{38}$</td><td>$1.2\times10^{-7}$</td><td>master weights, sums</td></tr>
+<tr><td>float16</td><td>1, 5, 10</td><td>65,504</td><td>$9.8\times10^{-4}$</td><td>inference</td></tr>
+<tr><td>bfloat16</td><td>1, 8, 7</td><td>$3.4\times10^{38}$</td><td>$7.8\times10^{-3}$</td><td>training on recent GPUs and TPUs</td></tr>
+</table></div>
+<p>bfloat16 keeps float32's exponent, so it covers the same range with about 3 significant digits instead of 7. Float16 keeps more digits but a narrow range: it overflows above 65,504 and flushes numbers below about $6\times10^{-8}$ to zero. Float16 training therefore multiplies the loss by a large factor before the backward pass and divides the gradients by it afterwards (<i>loss scaling</i>), so small gradients survive. <i>Mixed precision</i> training runs the matrix multiplications in 16 bits and keeps a float32 copy of the weights for the update, because a small step $\eta g$ added to a bfloat16 weight would round away.</p>
+<p><i>Quantization</i> goes further and stores each weight as a small integer with a shared scale. Symmetric absmax quantization with $b$ bits takes the scale from the largest weight in a group:</p>
+$$s = \frac{\max_i |w_i|}{2^{b-1} - 1}, \qquad q_i = \operatorname{round}(w_i / s), \qquad \hat w_i = s\,q_i, \qquad |w_i - \hat w_i| \le \frac s2$$
+<p>Each extra bit halves the step $s$ and the error. One large weight stretches the scale for its whole group, and the ordinary weights collapse onto a few levels. LLM weights contain such outliers, so 4-bit formats (GPTQ, AWQ, the GGUF files of llama.cpp) keep one scale per group of 32 to 128 weights. A 7-billion-parameter model takes 14 GB in 16-bit numbers, 7 GB in 8-bit and about 4 GB in 4-bit with its scales.</p>
+<p class="an"><b>Analogy.</b> A float is a ruler whose marks crowd together near zero and spread out farther away, so it keeps the same relative precision at any size. Quantization replaces each weight by the nearest mark on a ruler with 15 marks (4-bit) or 255 (8-bit). You choose the ruler's length to reach the largest weight, so one giant weight spreads the marks thin for all the others.</p>
+<div class="viz" data-viz="floats"><p class="cap">Top: the first 64 of 4,096 weights (dots), the levels the quantizer can store (lines) and the stored values (crosses). Bottom: the error over all 4,096 weights against the number of bits. Toggle the outlier, and switch between one scale for all weights and one scale per group of 32.</p></div>
+<p class="ml"><b>In ML:</b> large models train in bfloat16 with float32 master weights and serve in 8 or 4 bits. QLoRA (<a class="ref" href="#lora"></a>) fine-tunes on top of 4-bit weights. Float overflow is also why softmax needs the log-sum-exp trick (<a class="ref" href="#softmax"></a>).</p>
+<details class="code"><summary>From scratch <span>Python · NumPy</span></summary><pre><code>import numpy as np
+
+eps = np.float32(1.0)
+while np.float32(1.0) + eps / 2 != np.float32(1.0):    # halve until 1 + eps/2 rounds back to 1
+    eps /= 2
+print("float32 epsilon:", eps, np.finfo(np.float32).eps)
+print(np.float32(1) + np.float32(1e-8) == 1)          # True: the 1e-8 falls below the spacing near 1
+with np.errstate(over="ignore"):
+    print(np.float16(70000), np.finfo(np.float16).max)  # float16 overflows past 65,504
+
+def to_bf16(x):
+    """bfloat16 keeps float32's 8 exponent bits and the top 7 mantissa bits (here rounded toward zero)."""
+    return (np.asarray(x, np.float32).view(np.uint32) &amp; 0xFFFF0000).view(np.float32)
+
+print(to_bf16([3.14159265, 70000.0, 1e-30]))          # few digits, but float32's full range
+
+def quantize(w, bits, group=None):
+    """Symmetric absmax quantization, q = round(w / s), with one scale s per group of weights."""
+    g = w.reshape(-1, group) if group else w.reshape(1, -1)
+    top = 2 ** (bits - 1) - 1                          # 127 for 8 bits, 7 for 4 bits
+    s = np.abs(g).max(axis=1, keepdims=True) / top
+    q = np.clip(np.round(g / s), -top, top)            # these small integers are what you store
+    return (q * s).reshape(w.shape)
+
+rng = np.random.default_rng(0)
+w = rng.normal(0, 0.02, 4096)
+w[:4] = [0.4, -0.35, 0.3, -0.3]                        # a few outliers, as in real LLM weights
+for bits in (8, 4):
+    for group in (None, 32):
+        rmse = np.sqrt(np.mean((w - quantize(w, bits, group)) ** 2))
+        print(f"{bits}-bit, {'one scale' if group is None else 'a scale per 32 weights'}: RMSE {rmse:.5f}")
+</code></pre></details>
+<details class="code"><summary>Ready to use <span>Python · PyTorch + torchao</span></summary><pre><code>import copy
+import torch
+from torch import nn
+from torchao.quantization import Int8WeightOnlyConfig, IntxWeightOnlyConfig, quantize_
+from torchao.quantization.granularity import PerGroup
+
+for dt in (torch.float32, torch.float16, torch.bfloat16):
+    fi = torch.finfo(dt)
+    print(f"{str(dt):15s} {fi.bits} bits, max {fi.max:.3g}, epsilon {fi.eps:.3g}")
+x = torch.tensor([3.14159265, 70000.0])
+print(x.to(torch.float16), x.to(torch.bfloat16))      # float16 overflows to inf; bfloat16 keeps the range
+
+model = nn.Sequential(nn.Linear(512, 512), nn.ReLU(), nn.Linear(512, 10))
+with torch.autocast("cpu", dtype=torch.bfloat16):      # mixed precision: matmuls in bfloat16, weights stay float32
+    print(model(torch.randn(8, 512)).dtype, model[0].weight.dtype)
+
+x = torch.randn(8, 512)
+for name, config in [("int8", Int8WeightOnlyConfig()), ("int4, groups of 32", IntxWeightOnlyConfig(weight_dtype=torch.int4, granularity=PerGroup(32)))]:
+    q = copy.deepcopy(model)
+    quantize_(q, config)                               # swaps each Linear weight for a quantized tensor with scales
+    print(name, (q(x) - model(x)).abs().max().item())
+</code></pre></details>
+
+
 
 <h4 id="softmax"><span class="num"></span>Softmax, temperature and the log-sum-exp trick <span class="lvl l2">Intermediate</span></h4>
 <p>Softmax turns a vector of scores (<i>logits</i>) $\mathbf z$ into probabilities:</p>
@@ -1242,13 +1366,20 @@ print(np.linalg.matrix_power(P, 50)[0])             # rows of P^t converge to π
 
 
 
+<div class="quiz"><p><b>Check yourself.</b> Answer each question before you open it.</p>
+<details><summary>In float32, what does $1 + 10^{-8}$ evaluate to?</summary><p>1. The gap between 1 and the next float32 is $\epsilon \approx 1.2\times10^{-7}$, so the $10^{-8}$ rounds away.</p></details>
+<details><summary>Why does one outlier weight hurt 4-bit quantization, and what limits the damage?</summary><p>The scale $s = \max_i|w_i|/7$ grows with the outlier, so the ordinary weights round onto two or three levels. One scale per group of 32 to 128 weights confines the damage to the outlier's own group.</p></details>
+<details><summary>Why subtract the largest score before computing softmax?</summary><p>Softmax doesn't change when you shift all scores by a constant, and after the shift the largest exponential is $e^0 = 1$, so nothing overflows.</p></details>
+<details><summary>A Monte Carlo estimate has error 0.01 with 10,000 samples. How many samples give error 0.001?</summary><p>The error falls like $1/\sqrt N$, so you need 100 times more samples: 1,000,000.</p></details>
+</div>
+
 <h3 id="build-math">Projects to build</h3>
 <ul class="build">
 <li><b><a href="https://github.com/jonkrohn/ML-foundations" target="_blank" rel="noopener">jonkrohn/ML-foundations</a></b>: Jupyter notebooks for the linear algebra, calculus, probability, statistics and optimization in this part. <i>Project:</i> in <code>notebooks/gradient-descent-from-scratch.ipynb</code> you write gradient descent by hand. Extend it to fit a line to a dataset you care about, then switch to the stochastic version in <code>SGD-from-scratch.ipynb</code>. <i>Practices</i> <a class="ref" href="#derivative"></a>, <a class="ref" href="#gradient"></a>, <a class="ref" href="#gd1d"></a>.</li>
 <li><b><a href="https://github.com/fastai/numerical-linear-algebra" target="_blank" rel="noopener">fastai/numerical-linear-algebra</a></b>: the notebooks of fast.ai's Computational Linear Algebra course. <i>Project:</i> remove the moving people from a surveillance video with a low-rank matrix (notebook 3), find topics in news articles with SVD (notebook 2), or rank web pages with an eigenvector (notebook 7, PageRank). <i>Practices</i> <a class="ref" href="#eigen"></a>, <a class="ref" href="#svd"></a>, <a class="ref" href="#markov"></a>.</li>
 </ul>
 
-<h2 id="part-ml">Part II. Machine learning</h2>
+<h2 id="part-ml" data-layer="Algorithms">Part II. Machine learning</h2>
 <p>Machine learning fits a function to data. You choose a model family $f_\theta$, a loss that scores its predictions, and an optimizer that adjusts $\theta$ to lower the loss on training data. In <i>supervised</i> learning each example $\mathbf x_i$ comes with a label $y_i$. In <i>unsupervised</i> learning you only have the $\mathbf x_i$ and look for structure in them.</p>
 
 <h3 id="ch-mlbasics"><span class="num"></span>Foundations of machine learning</h3>
@@ -1323,6 +1454,11 @@ print(MinMaxScaler().fit_transform(X[:3]))
 </code></pre></details>
 
 
+
+<div class="quiz"><p><b>Check yourself.</b> Answer each question before you open it.</p>
+<details><summary>1% of patients have a disease, and a model predicts "healthy" for all of them. What are its accuracy and recall?</summary><p>Accuracy 99% and recall 0: it finds none of the sick patients. On imbalanced data, report precision and recall, or the ROC and precision-recall curves.</p></details>
+<details><summary>Why do you compute the scaling mean and standard deviation on the training set alone?</summary><p>Computing them on validation or test data leaks information from those sets into training and makes your scores optimistic. Fit the scaler on the training data and apply the same numbers to the rest.</p></details>
+</div>
 
 <h3 id="ch-sup"><span class="num"></span>Supervised learning</h3>
 
@@ -1645,6 +1781,13 @@ print(rbf.decision_function(X[:3]))              # f(x); the sign gives the clas
 
 
 
+<div class="quiz"><p><b>Check yourself.</b> Answer each question before you open it.</p>
+<details><summary>Why does k-NN with $k = 1$ overfit, and what does a larger $k$ do?</summary><p>With $k = 1$ each training point, noise included, claims its own neighborhood: zero training error and a jagged boundary. A larger $k$ averages more neighbors and smooths the boundary, trading variance for bias.</p></details>
+<details><summary>Where is logistic regression's decision boundary at threshold 0.5, and what shape does it have?</summary><p>Where $\mathbf w^\top\mathbf x + b = 0$, since $\sigma(0) = 0.5$. It is a hyperplane: a straight line in two dimensions.</p></details>
+<details><summary>How does a decision tree choose a split?</summary><p>It tries each feature and threshold and keeps the split that most reduces the impurity (Gini or entropy) of the two children, weighted by their sizes.</p></details>
+<details><summary>How can an SVM with an RBF kernel work in an infinite-dimensional feature space?</summary><p>Training and prediction touch the data through dot products alone, and the kernel $k(\mathbf x, \mathbf x')$ computes the feature-space dot product from the original vectors, so the features themselves never enter the computation. This is the kernel trick.</p></details>
+</div>
+
 <h3 id="ch-ens"><span class="num"></span>Ensembles</h3>
 
 <h4 id="forest"><span class="num"></span>Bagging and random forests <span class="lvl l2">Intermediate</span></h4>
@@ -1778,6 +1921,11 @@ print(model.feature_importances_.round(3))
 </code></pre></details>
 
 
+
+<div class="quiz"><p><b>Check yourself.</b> Answer each question before you open it.</p>
+<details><summary>Why does a random forest pick a random subset of features at each split?</summary><p>With bootstrap samples alone, the strongest features dominate the top of each tree and the trees come out correlated, and averaging correlated trees removes little variance. Random feature subsets decorrelate the trees.</p></details>
+<details><summary>What does each new tree in gradient boosting fit?</summary><p>The negative gradient of the loss with respect to the current predictions, which for squared error is the residual. The ensemble adds the new tree scaled by a small learning rate.</p></details>
+</div>
 
 <h3 id="ch-unsup"><span class="num"></span>Unsupervised learning</h3>
 
@@ -1914,6 +2062,12 @@ print(gm.weights_.round(3), gm.means_.round(2), gm.predict_proba(X[:2]).round(3)
 
 
 
+<div class="quiz"><p><b>Check yourself.</b> Answer each question before you open it.</p>
+<details><summary>k-means lowers its objective at each step, yet it can end in a poor clustering. Why, and what is the usual fix?</summary><p>Each step lowers the within-cluster sum of squares, so the algorithm converges, but to a local minimum that depends on the start. Use k-means++ starts and keep the best of several runs.</p></details>
+<details><summary>Which direction is the first principal component of centered data?</summary><p>The eigenvector of the covariance matrix with the largest eigenvalue, which is the top right singular vector of the data matrix. Its eigenvalue is the variance of the data along that direction.</p></details>
+<details><summary>How do Gaussian mixtures assign points, compared with k-means?</summary><p>A mixture gives each point a probability (responsibility) for each component, and each component has its own covariance, so a cluster can stretch or tilt. k-means makes hard assignments to round clusters.</p></details>
+</div>
+
 <h3 id="ch-prob-ml"><span class="num"></span>Probabilistic models</h3>
 
 <h4 id="gp"><span class="num"></span>Gaussian processes <span class="lvl l4">Expert</span></h4>
@@ -1961,6 +2115,11 @@ print(mean.round(3), std.round(3), round(gp.log_marginal_likelihood_value_, 3))
 </code></pre></details>
 
 
+
+<div class="quiz"><p><b>Check yourself.</b> Answer each question before you open it.</p>
+<details><summary>What does a Gaussian process return at a test point besides a prediction?</summary><p>A variance. The prediction is a full Gaussian, and its variance grows away from the training data, so the model reports where it is unsure.</p></details>
+<details><summary>What limits exact Gaussian processes to small datasets?</summary><p>Inverting the $n\times n$ kernel matrix costs $O(n^3)$ time and $O(n^2)$ memory, which caps exact GPs at about $10^4$ points. Sparse and inducing-point methods go further.</p></details>
+</div>
 
 <h3 id="build-ml">Projects to build</h3>
 <ul class="build">
@@ -2415,6 +2574,13 @@ print(sum(p.numel() for p in resnet18(weights=None).parameters()))   # ResNet-18
 
 
 
+<div class="quiz"><p><b>Check yourself.</b> Answer each question before you open it.</p>
+<details><summary>Why can't a single perceptron learn XOR, and what fixes it?</summary><p>XOR's classes aren't linearly separable, and a perceptron draws one line. A hidden layer with a nonlinearity can bend the boundary.</p></details>
+<details><summary>Why does a deep stack of sigmoid layers take so long to train, and what does ReLU change?</summary><p>The sigmoid's slope is at most 0.25, so backpropagation multiplies many small factors and the gradient vanishes. ReLU's slope is 1 for positive inputs.</p></details>
+<details><summary>What does inverted dropout do at training time and at test time?</summary><p>In training it zeroes each unit with probability $p$ and scales the survivors by $1/(1 - p)$; at test time it uses all units unchanged. The scaling keeps the expected output the same in both modes.</p></details>
+<details><summary>Why do residual connections let you train networks with hundreds of layers?</summary><p>Each block computes $\mathbf x + F(\mathbf x)$, so its Jacobian is $I + \partial F/\partial\mathbf x$ and the gradient keeps an identity path back to the early layers. A block can also learn to do nothing by setting $F$ near 0.</p></details>
+</div>
+
 <h3 id="build-dl">Projects to build</h3>
 <ul class="build">
 <li><b><a href="https://github.com/karpathy/nn-zero-to-hero" target="_blank" rel="noopener">karpathy/nn-zero-to-hero</a></b>: the notebooks of Andrej Karpathy's video course <i>Neural Networks: Zero to Hero</i>. <i>Project:</i> build micrograd, a tiny autograd engine (<code>lectures/micrograd</code>), then the makemore character-level language models (<code>lectures/makemore</code>), where you backpropagate by hand and add batch normalization. <i>Practices</i> <a class="ref" href="#backprop"></a>, <a class="ref" href="#mlp"></a>, <a class="ref" href="#batchnorm"></a>.</li>
@@ -2615,6 +2781,13 @@ for o in out:
 
 
 
+<div class="quiz"><p><b>Check yourself.</b> Answer each question before you open it.</p>
+<details><summary>Why does TF-IDF give little weight to a word like "the"?</summary><p>Its inverse document frequency, the log of the number of documents over the number that contain the word, is close to 0 when the word appears in most documents.</p></details>
+<details><summary>What does a BPE tokenizer do with a word that was absent from its training data?</summary><p>It splits the word into smaller known pieces, down to single bytes if needed, so it needs no "unknown" token.</p></details>
+<details><summary>A language model has perplexity 20 on a text. What does that mean?</summary><p>At each step the model is, on average, as uncertain as a uniform choice among 20 tokens. Perplexity is the exponential of the average negative log-likelihood per token.</p></details>
+<details><summary>How does temperature 0.5 change sampling compared with temperature 1?</summary><p>It divides the logits by 0.5, which doubles them and sharpens the softmax toward the top tokens. The output becomes more predictable and less varied.</p></details>
+</div>
+
 <h3 id="ch-emb"><span class="num"></span>Word embeddings</h3>
 
 <h4 id="wordvec"><span class="num"></span>Word embeddings: similarity and analogies <span class="lvl l1">Beginner</span></h4>
@@ -2694,6 +2867,11 @@ print(model.wv["cat"].shape)                       # model.wv.save("vectors.kv")
 </code></pre></details>
 
 
+
+<div class="quiz"><p><b>Check yourself.</b> Answer each question before you open it.</p>
+<details><summary>Why do one-hot vectors carry no meaning?</summary><p>Each pair of one-hot vectors is orthogonal and at the same distance, so "cat" sits as close to "dog" as to "stock". Dense embeddings place related words near each other.</p></details>
+<details><summary>What does skip-gram word2vec predict, and why do its vectors capture meaning?</summary><p>It predicts the words around a center word. Words that appear in similar contexts receive similar gradient pushes, so they end up with similar vectors.</p></details>
+</div>
 
 <h3 id="ch-seq"><span class="num"></span>Sequence models</h3>
 
@@ -2877,6 +3055,12 @@ print(context.shape, alpha.sum(-1))
 </code></pre></details>
 
 
+
+<div class="quiz"><p><b>Check yourself.</b> Answer each question before you open it.</p>
+<details><summary>Why does the Viterbi algorithm take $O(nT^2)$ steps instead of trying all $T^n$ tag sequences?</summary><p>The best path ending in each tag at word $i$ depends on the best paths ending at word $i - 1$, so you keep $T$ scores per word and try $T$ predecessors for each.</p></details>
+<details><summary>Why does an LSTM remember longer than a plain RNN?</summary><p>Its cell state updates by addition, $\mathbf c_t = \mathbf f_t\odot\mathbf c_{t-1} + \mathbf i_t\odot\tilde{\mathbf c}_t$, so the gradient along the cell path multiplies by the forget gate, with no weight matrix and no squashing. With $\mathbf f_t$ near 1, information survives hundreds of steps.</p></details>
+<details><summary>What bottleneck did attention remove from seq2seq models?</summary><p>Without attention, the decoder sees the source through the encoder's last state, one fixed-size vector. Attention lets it read all encoder states at each output step.</p></details>
+</div>
 
 <h3 id="ch-tf"><span class="num"></span>Transformers and large language models</h3>
 
@@ -3118,6 +3302,70 @@ model.print_trainable_parameters()
 
 
 
+<h4 id="scalinglaws"><span class="num"></span>Scaling laws and compute-optimal training <span class="lvl l4">Expert</span></h4>
+<p>Train language models of many sizes on many amounts of data, and their test loss follows a smooth curve. Hoffmann and others (2022) trained over 400 models, from 70 million to 16 billion parameters, and fit</p>
+$$L(N, D) = E + \frac{A}{N^\alpha} + \frac{B}{D^\beta}$$
+<p>for $N$ parameters and $D$ training tokens. $E$ is the loss that no model can beat, an estimate of the entropy of natural text, and the two power-law terms shrink as the model and the data grow. Besiroglu and others (2024) refit the published data and found $E = 1.82$, $A = 482$, $B = 2085$, $\alpha = 0.35$ and $\beta = 0.37$. A power law is a straight line on log-log axes, $\log(L - E) = \log A - \alpha\log N$, so you can fit one with linear regression (<a class="ref" href="#linreg"></a>) on small runs and extrapolate.</p>
+<p>Training costs about $C \approx 6ND$ FLOPs (<a class="ref" href="#transformer"></a>), so for a fixed budget a bigger model sees fewer tokens. Substitute $D = C/(6N)$, set the derivative with respect to $N$ to zero, and you get the compute-optimal split:</p>
+$$N_{\text{opt}} = G\Big(\frac C6\Big)^{\frac{\beta}{\alpha+\beta}}, \qquad D_{\text{opt}} = \frac1G\Big(\frac C6\Big)^{\frac{\alpha}{\alpha+\beta}}, \qquad G = \Big(\frac{\alpha A}{\beta B}\Big)^{\frac{1}{\alpha+\beta}}$$
+<p>Both exponents sit near 0.5: double the compute and you should grow the model and the data by about $\sqrt2$ each. That works out to about 20 tokens per parameter. Chinchilla, a 70-billion-parameter model trained on 1.4 trillion tokens, beat the 280-billion-parameter Gopher, which saw 300 billion tokens on about the same compute. The rule minimizes training compute. A model you serve to many users also costs compute for each token it generates, so labs train smaller models far longer: Llama 3 8B saw 15 trillion tokens, about 1,900 per parameter.</p>
+<p class="an"><b>Analogy.</b> A building project with a fixed budget: you can hire more workers (parameters) or pay for more working days (tokens). A crowd of workers for one day gets little done, and so does one worker for a decade. Each budget has a best crew size, and it grows with the square root of the budget.</p>
+<div class="viz" data-viz="scalinglaws"><p class="cap">Each gray curve fixes the compute and varies the model size; the blue curve is your budget. Orange dots mark the best size, and the orange line joins the best sizes of all budgets. Pick a model to set the budget to its compute and compare it with the best model at that budget.</p></div>
+<details class="code"><summary>From scratch <span>Python · NumPy</span></summary><pre><code>import numpy as np
+
+E, A, B, alpha, beta = 1.8172, 482.01, 2085.43, 0.3478, 0.3658   # Chinchilla data, refit by Besiroglu et al. (2024)
+loss = lambda N, D: E + A / N ** alpha + B / D ** beta
+
+def optimum(C):
+    """Best model size N and token count D for a compute budget C ≈ 6 N D, in closed form."""
+    G = (alpha * A / (beta * B)) ** (1 / (alpha + beta))
+    N = G * (C / 6) ** (beta / (alpha + beta))
+    return N, C / (6 * N)
+
+C = 5.76e23                                       # the compute that trained Chinchilla
+N, D = optimum(C)
+grid = np.logspace(9, 12, 3001)                   # check by brute force along the IsoFLOP curve
+best = grid[np.argmin(loss(grid, C / (6 * grid)))]
+print(f"N_opt = {N:.3g} (grid: {best:.3g}), D_opt = {D:.3g}, {D / N:.0f} tokens per parameter")
+for name, n, d in [("Chinchilla", 70e9, 1.4e12), ("Gopher", 280e9, 300e9), ("Llama 3 8B", 8e9, 15e12)]:
+    c = 6 * n * d
+    print(f"{name:11s} C = {c:.2g}: loss {loss(n, d):.3f}, best possible at that C {loss(*optimum(c)):.3f}")
+
+# A power law is a straight line on log-log axes: fit log(L - E) = log A - alpha log N.
+rng = np.random.default_rng(0)
+Ns = np.logspace(7, 10, 12)
+L = E + A / Ns ** alpha + rng.normal(0, 0.005, Ns.size)
+slope, intercept = np.polyfit(np.log(Ns), np.log(L - E), 1)
+print(f"fitted alpha = {-slope:.3f}, A = {np.exp(intercept):.0f}")
+</code></pre></details>
+<details class="code"><summary>Ready to use <span>Python · SciPy</span></summary><pre><code>import numpy as np
+from scipy.optimize import curve_fit, minimize_scalar
+
+E, A, B, alpha, beta = 1.8172, 482.01, 2085.43, 0.3478, 0.3658
+loss = lambda N, D: E + A / N ** alpha + B / D ** beta
+
+for C in (1e21, 1e23, 1e25):                      # minimize along each IsoFLOP curve, D = C / (6N)
+    r = minimize_scalar(lambda logN: loss(np.exp(logN), C / (6 * np.exp(logN))), bounds=(np.log(1e6), np.log(1e13)), method="bounded")
+    N = np.exp(r.x)
+    print(f"C = {C:.0e}: N_opt = {N:.3g}, {C / (6 * N) / N:.0f} tokens per parameter, loss {r.fun:.3f}")
+
+# Fit L(N) = E + A / N^alpha to (synthetic) runs, as you would to your own small-scale experiments.
+rng = np.random.default_rng(0)
+Ns = np.logspace(7, 10, 12)
+L = E + A / Ns ** alpha + rng.normal(0, 0.005, Ns.size)
+(e, a, al), _ = curve_fit(lambda n, e, a, al: e + a / n ** al, Ns, L, p0=(2, 300, 0.3), maxfev=20000)
+print(f"E = {e:.2f}, A = {a:.0f}, alpha = {al:.3f}")
+</code></pre></details>
+
+
+
+<div class="quiz"><p><b>Check yourself.</b> Answer each question before you open it.</p>
+<details><summary>Why do transformers divide attention scores by $\sqrt{d_k}$?</summary><p>The dot product of two vectors with $d_k$ independent unit-variance entries has variance $d_k$. Large scores push softmax toward a one-hot output with vanishing gradients, and dividing by $\sqrt{d_k}$ brings the variance back to 1.</p></details>
+<details><summary>About how many parameters does one transformer block of width $d$ hold?</summary><p>About $12d^2$: $4d^2$ in the attention projections $W_Q$, $W_K$, $W_V$, $W_O$ and $8d^2$ in a feed-forward network of width $4d$.</p></details>
+<details><summary>How many parameters does LoRA with rank 8 train on a 4096 × 4096 weight matrix?</summary><p>$r(d + k) = 8\,(4096 + 4096) = 65{,}536$, against 16.8 million for the full matrix.</p></details>
+<details><summary>You get 4 times more training compute. How should you split it between model size and data?</summary><p>Both exponents of the compute-optimal rule are close to 0.5, so make the model about twice as large and train on about twice as many tokens.</p></details>
+</div>
+
 <h3 id="ch-nlpeval"><span class="num"></span>Evaluating and retrieving text</h3>
 
 <h4 id="bleu"><span class="num"></span>Evaluating generated text: BLEU and ROUGE <span class="lvl l2">Intermediate</span></h4>
@@ -3228,6 +3476,12 @@ print(bm25.get_top_n(tok(question), docs, n=2))
 </code></pre></details>
 
 
+
+<div class="quiz"><p><b>Check yourself.</b> Answer each question before you open it.</p>
+<details><summary>Why does BLEU clip n-gram counts, and why does it need a brevity penalty?</summary><p>Clipping caps each n-gram's count at its count in the reference, so repeating "the the the" earns nothing. BLEU measures precision, which a short output can game, so the brevity penalty docks candidates shorter than the reference.</p></details>
+<details><summary>In BM25, what do $k_1$ and $b$ control?</summary><p>$k_1$ sets how fast repeated terms saturate, and $b$ sets how much BM25 penalizes long chunks.</p></details>
+<details><summary>Why can dense retrieval find a passage that BM25 misses?</summary><p>BM25 needs shared words, while dense retrieval compares embeddings, so it can match a question to a passage that says the same thing with different words.</p></details>
+</div>
 
 <h3 id="build-nlp">Projects to build</h3>
 <ul class="build">
@@ -3348,6 +3602,11 @@ print(mag.max(), (canny &gt; 0).sum(), "edge pixels")
 
 
 
+<div class="quiz"><p><b>Check yourself.</b> Answer each question before you open it.</p>
+<details><summary>A 3 × 3 kernel with all entries $1/9$ slides over an image. What happens to a flat region and to a sharp edge?</summary><p>A flat region stays the same, since the average of equal values is that value. The edge gets smeared over about 3 pixels: the kernel is a blur.</p></details>
+<details><summary>Why does the Sobel kernel respond to edges?</summary><p>Its weights approximate a derivative: they subtract the pixels on one side from those on the other. Flat regions give 0, and sharp changes in brightness give large values.</p></details>
+</div>
+
 <h3 id="ch-cnn"><span class="num"></span>Convolutional networks</h3>
 
 <h4 id="convshape"><span class="num"></span>Conv layer arithmetic: padding, stride and pooling <span class="lvl l2">Intermediate</span></h4>
@@ -3389,11 +3648,11 @@ print(nn.AdaptiveAvgPool2d(1)(torch.randn(1, 512, 7, 7)).shape)   # global avera
 
 
 
-<h4 id="depthwise"><span class="num"></span>Efficient convolutions and CNN architectures <span class="lvl l3">Advanced</span></h4>
+<h4 id="depthwise"><span class="num"></span>Efficient convolutions <span class="lvl l3">Advanced</span></h4>
 <p>Standard convolution mixes space and channels at once, and its cost grows with both. For an output of size $H\times W$ it takes $H\,W\,K^2\,C_{\text{in}}\,C_{\text{out}}$ multiply-adds. A <i>depthwise separable</i> convolution (MobileNet) splits the job in two. The depthwise step filters each input channel with its own $K\times K$ kernel, and a pointwise $1\times1$ convolution then mixes the channels:</p>
 $$\text{separable cost} = H\,W\,K^2\,C_{\text{in}} + H\,W\,C_{\text{in}}\,C_{\text{out}}, \qquad \frac{\text{separable}}{\text{standard}} = \frac{1}{C_{\text{out}}} + \frac{1}{K^2}$$
 <p>For $K = 3$ that is 8 to 9 times cheaper, at a small cost in accuracy. Other tricks: $1\times1$ <i>bottleneck</i> convolutions (ResNet-50, Inception) shrink the channels before an expensive $3\times3$ layer and expand them after. <i>Grouped</i> convolutions (ResNeXt) split the channels into groups that don't mix. EfficientNet scales depth, width and resolution together by fixed ratios (compound scaling).</p>
-<p>The classic lineage runs LeNet (1998), AlexNet (2012), VGG (2014), Inception (2014), ResNet (2015), MobileNet (2017), EfficientNet (2019) and ConvNeXt (2022). Residual connections (<a class="ref" href="#residual"></a>) made the very deep ones trainable. In <i>transfer learning</i>, you take a network pretrained on ImageNet, replace its final layer, and fine-tune it on your own smaller dataset.</p>
+<p>Part X walks through whole networks built from these layers: LeNet and VGG (<a class="ref" href="#lenet"></a>), then ResNet (<a class="ref" href="#resnet"></a>). MobileNet (2017) and EfficientNet (2019) build on the separable convolutions above, and ConvNeXt (2022) updates ResNet with 7 × 7 depthwise kernels. In <i>transfer learning</i>, you take a network pretrained on ImageNet, replace its final layer, and fine-tune it on your own smaller dataset.</p>
 <p class="an"><b>Analogy.</b> A standard convolution is a chef who tastes every ingredient combination at once. A depthwise separable one splits the job: season each ingredient alone (depthwise), then mix them (pointwise). You get almost the same dish for a fraction of the work.</p>
 <div class="viz" data-viz="depthwise"><p class="cap">Compare the cost and the parameters of one standard layer and its depthwise separable replacement. The saving approaches $K^2$ as $C_{\text{out}}$ grows.</p></div>
 <details class="code"><summary>From scratch <span>Python · plain Python</span></summary><pre><code>def standard_cost(H, W, K, c_in, c_out):
@@ -3421,6 +3680,12 @@ print(count(mobilenet_v3_small(weights=None)))                 # weights="DEFAUL
 </code></pre></details>
 
 
+
+<div class="quiz"><p><b>Check yourself.</b> Answer each question before you open it.</p>
+<details><summary>A 32 × 32 input passes through a 5 × 5 convolution with padding 2. What is the output size with stride 1, and with stride 2?</summary><p>$\lfloor(32 - 5 + 4)/1\rfloor + 1 = 32$, and with stride 2, $\lfloor 31/2\rfloor + 1 = 16$.</p></details>
+<details><summary>Why do networks stack two 3 × 3 convolutions instead of using one 5 × 5?</summary><p>The stack sees the same 5 × 5 patch with fewer weights, $18C^2$ against $25C^2$, and adds a nonlinearity in between.</p></details>
+<details><summary>How much cheaper is a depthwise separable 3 × 3 convolution with 256 output channels than a standard one?</summary><p>The cost ratio is $1/C_{\text{out}} + 1/K^2 = 1/256 + 1/9 \approx 0.115$, about 8.7 times cheaper.</p></details>
+</div>
 
 <h3 id="ch-det"><span class="num"></span>Detection, segmentation and modern vision</h3>
 
@@ -3616,6 +3881,13 @@ print(nt_xent(z1, z1 + 0.05 * torch.randn(16, 128)), clip_loss(torch.randn(16, 1
 
 
 
+<div class="quiz"><p><b>Check yourself.</b> Answer each question before you open it.</p>
+<details><summary>Two boxes of area 100 overlap in an area of 50. What is their IoU?</summary><p>$50/(100 + 100 - 50) = 1/3$.</p></details>
+<details><summary>Why is pixel accuracy a poor score for segmenting small objects?</summary><p>If the object covers 2% of the pixels, predicting background everywhere scores 98% accuracy and a Dice of 0. Dice and IoU score the overlap with the object itself.</p></details>
+<details><summary>How many tokens does a ViT make from a 224 × 224 image with 16 × 16 patches?</summary><p>$(224/16)^2 = 196$ patch tokens, plus the [CLS] token.</p></details>
+<details><summary>How does CLIP classify images into classes it didn't train on?</summary><p>It embeds a prompt such as "a photo of a {class}" for each class with the text encoder and picks the class whose embedding has the highest cosine similarity with the image embedding.</p></details>
+</div>
+
 <h3 id="build-cv">Projects to build</h3>
 <ul class="build">
 <li><b><a href="https://github.com/ultralytics/ultralytics" target="_blank" rel="noopener">ultralytics/ultralytics</a></b>: the library behind the YOLO object detectors. <i>Project:</i> label 100 to 200 photos of objects you care about (motorbikes on the road, fruit at a market), train a YOLO detector on them, and read its precision, recall and mAP. <i>Practices</i> <a class="ref" href="#iou"></a>, <a class="ref" href="#ap"></a>, <a class="ref" href="#convshape"></a>.</li>
@@ -3623,7 +3895,7 @@ print(nt_xent(z1, z1 + 0.05 * torch.randn(16, 128)), clip_loss(torch.randn(16, 1
 </ul>
 
 <h2 id="part-gen">Part VI. Generative models</h2>
-<p>A generative model learns the data distribution $p(\mathbf x)$ well enough to draw new samples from it. The three families below differ in how they get around the fact that $p(\mathbf x)$ is intractable for images and text.</p>
+<p>A generative model learns the data distribution $p(\mathbf x)$ well enough to draw new samples from it. The four families below differ in how they get around the fact that $p(\mathbf x)$ is intractable for images and text.</p>
 
 <h3 id="ch-gen"><span class="num"></span>Generative models</h3>
 
@@ -3788,6 +4060,92 @@ print(x.shape)
 </code></pre></details>
 
 
+
+<h4 id="flowmatch"><span class="num"></span>Flow matching <span class="lvl l4">Expert</span></h4>
+<p>Diffusion (<a class="ref" href="#diffusion"></a>) generates by undoing a noising process step by step. <i>Flow matching</i> (Lipman and others, 2022), which Liu and others call <i>rectified flow</i>, learns a velocity field $\mathbf v_\theta(\mathbf x, t)$ and generates by following it. Start from noise $\mathbf x_0 \sim \mathcal N(\mathbf 0, I)$ at $t = 0$ and solve the differential equation $d\mathbf x/dt = \mathbf v_\theta(\mathbf x, t)$ up to $t = 1$, where the samples look like data.</p>
+<p>Training needs no simulation. Pair a noise sample $\mathbf x_0$ with a data sample $\mathbf x_1$, join them with a straight line, and teach the network the velocity of that line:</p>
+$$\mathbf x_t = (1 - t)\,\mathbf x_0 + t\,\mathbf x_1, \qquad L(\theta) = \mathbb E_{t,\,\mathbf x_0,\,\mathbf x_1}\big\|\mathbf v_\theta(\mathbf x_t, t) - (\mathbf x_1 - \mathbf x_0)\big\|^2$$
+<p>A point $\mathbf x_t$ lies on many such lines, so the network can't know which line it is on. The squared loss makes it predict the average direction, $\mathbf v(\mathbf x, t) = \mathbb E[\mathbf x_1 - \mathbf x_0 \mid \mathbf x_t = \mathbf x]$, and following that average field carries the whole noise distribution onto the data distribution. To generate, take $K$ Euler steps, $\mathbf x \leftarrow \mathbf x + \mathbf v_\theta(\mathbf x, t)/K$.</p>
+<p>The averaged paths bend, so one big step fails. At $t = 0$ the average direction points at the mean of the data, and a single step lands each sample there. A few steps fix it, and <i>reflow</i> retrains on the model's own (noise, sample) pairs to straighten the paths further. Stable Diffusion 3 and FLUX generate images this way with a transformer as $\mathbf v_\theta$, and robot policies such as $\pi_0$ use it to generate motor actions.</p>
+<p class="an"><b>Analogy.</b> Pouring sand into a mold: each grain starts at a random spot and has to end somewhere in the shape. Flow matching learns a wind map, a direction to blow at each place and time, so that each grain carried by the wind lands in the shape. Training shows the wind straight trips from random spots to random points of the shape, and the wind learns their average.</p>
+<div class="viz" data-viz="flowmatch"><p class="cap">Gray dots: noise samples at $t = 0$. Orange: the data, two interleaved moons. Blue: each sample at time $t$ after following the exact average velocity of this data with $K$ Euler steps; thin lines trace the paths. With $K = 1$ each sample lands on the mean of the data, and a handful of steps is enough.</p></div>
+<details class="code"><summary>From scratch <span>Python · NumPy</span></summary><pre><code>import numpy as np
+
+rng = np.random.default_rng(0)
+theta = rng.uniform(0, np.pi, 200)                     # data: two interleaved half circles ("moons")
+data = np.r_[np.c_[np.cos(theta), np.sin(theta)], np.c_[1 - np.cos(theta), 0.5 - np.sin(theta)]] - [0.5, 0.25]
+
+def velocity(x, t):
+    """Exact marginal velocity E[x1 - x0 | x_t = x] for x_t = (1 - t) x0 + t x1, x0 ~ N(0, I), x1 ~ data."""
+    d2 = ((x[:, None, :] - t * data[None]) ** 2).sum(-1)        # x_t | x1 is Gaussian around t·x1, sd (1 - t)
+    w = np.exp(-(d2 - d2.min(1, keepdims=True)) / (2 * (1 - t) ** 2))
+    w /= w.sum(1, keepdims=True)                                 # posterior weight of each data point
+    return (w[..., None] * (data[None] - x[:, None, :])).sum(1) / (1 - t)
+
+def sample(n, steps):
+    x = rng.normal(size=(n, 2))                                  # start from noise at t = 0
+    for k in range(steps):
+        x = x + velocity(x, k / steps) / steps                   # Euler step along dx/dt = v(x, t)
+    return x
+
+for steps in (1, 2, 4, 16):
+    x = sample(500, steps)
+    gap = np.sqrt(((x[:, None] - data[None]) ** 2).sum(-1)).min(1).mean()
+    print(f"{steps:2d} steps: mean distance to the nearest data point {gap:.3f}")   # 1 step lands every sample at the data mean
+
+def fm_loss(v_model, x1):
+    """The training loss: regress the network's velocity onto x1 - x0 along straight paths."""
+    x0, t = rng.normal(size=x1.shape), rng.uniform(size=(len(x1), 1))
+    xt = (1 - t) * x0 + t * x1
+    return ((v_model(xt, t) - (x1 - x0)) ** 2).sum(1).mean()
+
+print("loss of the exact field:", fm_loss(lambda x, t: np.stack([velocity(xi[None], ti[0])[0] for xi, ti in zip(x, t)]), data[:64]))
+</code></pre></details>
+<details class="code"><summary>Ready to use <span>Python · PyTorch</span></summary><pre><code>import math
+import torch
+from torch import nn
+
+torch.manual_seed(0)
+def moons(n):
+    t = torch.rand(n) * math.pi
+    first = torch.rand(n) &lt; 0.5
+    x = torch.where(first, torch.cos(t), 1 - torch.cos(t))
+    y = torch.where(first, torch.sin(t), 0.5 - torch.sin(t))
+    return torch.stack([x - 0.5, y - 0.25], 1)
+
+net = nn.Sequential(nn.Linear(3, 256), nn.SiLU(), nn.Linear(256, 256), nn.SiLU(),
+                    nn.Linear(256, 256), nn.SiLU(), nn.Linear(256, 2))          # v_θ(x, t): input (x, y, t)
+opt = torch.optim.Adam(net.parameters(), lr=2e-3)
+sched = torch.optim.lr_scheduler.CosineAnnealingLR(opt, 4000)
+for step in range(4000):                                                       # about half a minute on a laptop CPU
+    x1 = moons(512)
+    x0, t = torch.randn_like(x1), torch.rand(512, 1)
+    xt = (1 - t) * x0 + t * x1                                                 # a point on the straight path
+    loss = ((net(torch.cat([xt, t], 1)) - (x1 - x0)) ** 2).sum(1).mean()       # regress onto the path's velocity
+    opt.zero_grad(); loss.backward(); opt.step(); sched.step()
+
+@torch.no_grad()
+def sample(n, steps):
+    x = torch.randn(n, 2)
+    for k in range(steps):
+        x = x + net(torch.cat([x, torch.full((n, 1), k / steps)], 1)) / steps  # Euler steps from t = 0 to 1
+    return x
+
+ref = moons(4000)
+for steps in (1, 4, 16):
+    d = torch.cdist(sample(2000, steps), ref).min(1).values
+    print(f"{steps:2d} steps: {(d &lt; 0.05).float().mean():.0%} of samples within 0.05 of the data")
+# At scale: diffusers' FlowMatchEulerDiscreteScheduler runs this sampler for Stable Diffusion 3 and FLUX.
+</code></pre></details>
+
+
+
+<div class="quiz"><p><b>Check yourself.</b> Answer each question before you open it.</p>
+<details><summary>Why does a VAE use the reparameterization trick?</summary><p>You can't backpropagate through a random draw. Writing $\mathbf z = \boldsymbol\mu + \boldsymbol\sigma\odot\boldsymbol\epsilon$ with $\boldsymbol\epsilon \sim \mathcal N(\mathbf 0, I)$ moves the randomness into an input, so $\mathbf z$ is differentiable in $\boldsymbol\mu$ and $\boldsymbol\sigma$.</p></details>
+<details><summary>What is mode collapse in a GAN?</summary><p>The generator covers part of the data, a few kinds of output that fool the discriminator, and ignores the rest of the distribution.</p></details>
+<details><summary>What does the DDPM network predict, and what loss trains it?</summary><p>The noise $\boldsymbol\epsilon$ mixed into a clean sample at step $t$. The loss is the squared error $\|\boldsymbol\epsilon - \boldsymbol\epsilon_\theta(\mathbf x_t, t)\|^2$.</p></details>
+<details><summary>Why does one Euler step of flow matching send each sample to the mean of the data?</summary><p>At $t = 0$ a noise sample says nothing about which data point it will reach, so the average velocity is $\mathbb E[\mathbf x_1] - \mathbf x_0$, and a step of size 1 lands on $\mathbb E[\mathbf x_1]$.</p></details>
+</div>
 
 <h3 id="build-gen">Projects to build</h3>
 <ul class="build">
@@ -4081,6 +4439,13 @@ print(trainer.state.log_history[-1])
 
 
 
+<div class="quiz"><p><b>Check yourself.</b> Answer each question before you open it.</p>
+<details><summary>Why does ε-greedy's regret grow in proportion to $T$ while UCB's grows like $\log T$?</summary><p>ε-greedy keeps picking random arms with probability ε forever, so it loses a fixed amount per round. UCB's exploration bonus shrinks as data comes in, so it stops wasting pulls on arms it knows are worse.</p></details>
+<details><summary>What makes Q-learning off-policy?</summary><p>Its target uses the best next action, $r + \gamma\max_{a'}Q(s', a')$, whatever the agent does next, so it learns the optimal policy while it explores with ε-greedy.</p></details>
+<details><summary>Why does PPO clip the probability ratio?</summary><p>One batch can push the policy far from the policy that collected the data, and performance can collapse. Clipping $r_t = \pi_\theta(a_t\mid s_t)/\pi_{\text{old}}(a_t\mid s_t)$ to $[1 - \epsilon, 1 + \epsilon]$ removes the incentive to move beyond that range.</p></details>
+<details><summary>What does DPO drop from RLHF?</summary><p>The separate reward model and the reinforcement learning loop. It trains the policy on preference pairs with a classification-style loss derived from the same KL-regularized objective.</p></details>
+</div>
+
 <h3 id="build-rl">Projects to build</h3>
 <ul class="build">
 <li><b><a href="https://github.com/huggingface/deep-rl-class" target="_blank" rel="noopener">huggingface/deep-rl-class</a></b>: the free Hugging Face Deep Reinforcement Learning course, with a hands-on notebook in each unit. <i>Project:</i> train Q-learning agents on FrozenLake and Taxi (unit 2), REINFORCE on CartPole (unit 4), and PPO written from scratch with CleanRL (unit 8). <i>Practices</i> <a class="ref" href="#qlearn"></a>, <a class="ref" href="#pg"></a>, <a class="ref" href="#ppo"></a>.</li>
@@ -4088,6 +4453,117 @@ print(trainer.state.log_history[-1])
 </ul>
 
 <h2 id="part-graph">Part VIII. Graphs</h2>
+<p>This part starts with the matrix view of a graph and random walks on it, the tools behind PageRank, then builds graph neural networks on the same matrices.</p>
+
+<h3 id="ch-graphs"><span class="num"></span>Graphs and random walks</h3>
+
+<h4 id="graphs"><span class="num"></span>Graphs and adjacency matrices <span class="lvl l1">Beginner</span></h4>
+<p>A graph is a set of <i>nodes</i> joined by <i>edges</i>: people and friendships, web pages and links, atoms and bonds, road junctions and roads. Edges can have a direction (a link from page $i$ to page $j$) and a weight (the length of a road). You store a graph with $n$ nodes as an $n\times n$ <i>adjacency matrix</i>:</p>
+$$A_{ij} = \begin{cases}1 & \text{if an edge joins } i \text{ to } j\\ 0 & \text{otherwise}\end{cases}, \qquad d_i = \sum_j A_{ij}, \qquad (A^k)_{ij} = \#\{\text{walks of length } k \text{ from } i \text{ to } j\}$$
+<p>For an undirected graph, $A$ is symmetric. The row sums are the <i>degrees</i> $d_i$, the number of neighbors of each node. Matrix powers count walks: $(A^2)_{ij} = \sum_m A_{im}A_{mj}$ adds one for each middle node $m$ that links $i$ to $j$, and the same argument repeats for each extra step. Real graphs are sparse, with a few neighbors per node, so large ones live in edge lists: a dense matrix for a million nodes would hold $10^{12}$ entries.</p>
+<p><i>Breadth-first search</i> (BFS) finds shortest paths in an unweighted graph. Visit the start node, then its neighbors, then their unvisited neighbors, and record each node's distance on its first visit; the run takes time $O(n + |E|)$ for $|E|$ edges. With weighted edges, Dijkstra's algorithm replaces the queue with a priority queue. The <i>Laplacian</i> $L = D - A$, with $D$ the diagonal matrix of degrees, links graphs back to eigenvectors (<a class="ref" href="#eigen"></a>): the eigenvector of its second-smallest eigenvalue splits a graph into two halves with few edges between them, a method called spectral clustering.</p>
+<p class="an"><b>Analogy.</b> A class's friendship table: row $i$, column $j$ holds a 1 if students $i$ and $j$ are friends, and a student's row sum counts their friends. Multiply the table by itself, and each entry counts the friends two students share, which is the number of ways a note can pass from one to the other through a single friend.</p>
+<div class="viz" data-viz="graphs"><p class="cap">Click a node to start from it. The matrix shows $A^k$: entry $(i, j)$ counts the walks of length $k$ from $i$ to $j$, and the orange row belongs to the start node. Blue nodes are reachable by a walk of $k$ steps; green labels give the BFS distance from the start.</p></div>
+<details class="code"><summary>From scratch <span>Python · NumPy</span></summary><pre><code>import numpy as np
+from collections import deque
+
+edges = [(0, 1), (0, 2), (1, 2), (1, 3), (3, 4), (4, 5), (4, 6), (5, 6), (6, 7)]
+n = 8
+A = np.zeros((n, n), dtype=int)
+for i, j in edges:
+    A[i, j] = A[j, i] = 1                          # undirected: the matrix is symmetric
+
+print("degrees:", A.sum(1))
+A3 = np.linalg.matrix_power(A, 3)
+print("walks of length 3 from node 0 to node 3:", A3[0, 3])   # (A^k)_ij counts walks of length k
+
+def bfs(A, source):
+    """Shortest path lengths (number of edges) from source, by breadth-first search."""
+    dist = {source: 0}
+    queue = deque([source])
+    while queue:
+        u = queue.popleft()
+        for v in np.flatnonzero(A[u]):             # neighbors of u
+            if v not in dist:
+                dist[v] = dist[u] + 1
+                queue.append(v)
+    return [dist.get(v, -1) for v in range(len(A))]
+
+print("distances from node 0:", bfs(A, 0))
+L = np.diag(A.sum(1)) - A                          # graph Laplacian D - A
+vals, vecs = np.linalg.eigh(L)
+print("Fiedler vector signs split the graph:", (vecs[:, 1] &gt; 0).astype(int))   # spectral clustering in one line
+</code></pre></details>
+<details class="code"><summary>Ready to use <span>Python · NetworkX</span></summary><pre><code>import networkx as nx
+
+G = nx.Graph([(0, 1), (0, 2), (1, 2), (1, 3), (3, 4), (4, 5), (4, 6), (5, 6), (6, 7)])
+A = nx.to_numpy_array(G, nodelist=range(8), dtype=int)
+print(A)
+print(dict(G.degree()))
+print(nx.single_source_shortest_path_length(G, 0))
+print(nx.shortest_path(G, 0, 7), nx.diameter(G))
+print([sorted(c) for c in nx.community.louvain_communities(G, seed=0)])   # community detection
+# Large graphs: keep the sparse form, nx.to_scipy_sparse_array(G); a dense n × n matrix needs n² numbers.
+</code></pre></details>
+
+
+
+<h4 id="pagerank"><span class="num"></span>Random walks and PageRank <span class="lvl l2">Intermediate</span></h4>
+<p>Picture a surfer who clicks a random link on each page. Pages that many links point to collect the most visits, and a link from a page the surfer visits often counts for more. PageRank (Brin and Page, 1998) ranks pages by the share of time this surfer spends on each. The walk is a Markov chain (<a class="ref" href="#markov"></a>) with transition matrix $P_{ij} = A_{ij}/d_i$, where $d_i$ counts the links leaving page $i$.</p>
+<p>Two things break the plain walk. A page with no outgoing links traps the surfer, and a group of pages that link to each other and nowhere else absorbs all the time. PageRank fixes both with <i>teleporting</i>: with probability $\alpha$ (0.85 in the original) the surfer follows a link, and otherwise jumps to a page chosen at random. From a dead end the surfer jumps. The ranking $\boldsymbol\pi$ is the stationary distribution of this walk:</p>
+$$\boldsymbol\pi = \alpha\,\boldsymbol\pi P + \frac{1-\alpha}{n}\,\mathbf 1^\top, \qquad \boldsymbol\pi^{(t+1)} = \alpha\,\boldsymbol\pi^{(t)} P + \frac{1-\alpha}{n}\,\mathbf 1^\top$$
+<p>The right-hand form is <i>power iteration</i>: start from the uniform vector and repeat. Each step shrinks the error by at least a factor $\alpha$, so 50 steps shrink it by a factor of about 3,000 at $\alpha = 0.85$. In matrix terms, $\boldsymbol\pi$ is the leading left eigenvector (<a class="ref" href="#eigen"></a>) of the Google matrix $G = \alpha P + \frac{1-\alpha}{n}\mathbf 1\mathbf 1^\top$, with eigenvalue 1. Teleporting lets the surfer reach each page from each other page, which guarantees that this eigenvector is unique.</p>
+<p><i>Personalized PageRank</i> teleports back to one chosen node instead of a random one, so it scores nodes by closeness to that node; recommenders use it to find items like the one you are viewing. Random walks also turn graphs into sequences: DeepWalk and node2vec run short walks from each node and train word2vec (<a class="ref" href="#word2vec"></a>) on them, with nodes as the words, which gives each node an embedding.</p>
+<p class="an"><b>Analogy.</b> A tourist wanders a city: at each corner they walk down a random street, and now and then they take a taxi to a random spot. Over a long trip, the share of time they spend at each square is its PageRank. Squares that many streets lead to rank highest, and streets from busy squares count for more. The taxi rides keep the tourist from getting stuck in a dead-end alley.</p>
+<div class="viz" data-viz="pagerank"><p class="cap">Each node is a page, arrows are links, and node size shows PageRank. Press Reset and then Step to watch power iteration converge from the uniform start, or let the random surfer walk and compare its visit shares (orange) with PageRank (blue). Page 7 has no links out, so the surfer jumps from it to any page. Lower $\alpha$ and the ranks even out.</p></div>
+<details class="code"><summary>From scratch <span>Python · NumPy</span></summary><pre><code>import numpy as np
+
+links = {0: [1, 2], 1: [2], 2: [0], 3: [2], 4: [2, 3], 5: [4], 6: [4, 5], 7: []}   # page -&gt; pages it links to
+n, alpha = 8, 0.85
+P = np.zeros((n, n))
+for i, outs in links.items():
+    P[i, outs if outs else range(n)] = 1 / (len(outs) or n)   # a dead end (no links) jumps anywhere
+
+pi = np.full(n, 1 / n)
+for t in range(100):                               # power iteration: follow a link, or teleport
+    new = alpha * pi @ P + (1 - alpha) / n
+    if np.abs(new - pi).sum() &lt; 1e-12:
+        break
+    pi = new
+print(f"{t} iterations:", pi.round(3), pi.sum())
+
+G = alpha * P + (1 - alpha) / n                    # the Google matrix: rows sum to 1
+vals, vecs = np.linalg.eig(G.T)
+v = np.real(vecs[:, np.argmax(np.real(vals))])
+print("leading eigenvector:", (v / v.sum()).round(3))   # the same ranking
+
+rng = np.random.default_rng(0)                     # or simulate the random surfer and count visits
+page, visits = 0, np.zeros(n)
+for _ in range(200_000):
+    page = rng.choice(n, p=P[page]) if rng.random() &lt; alpha else rng.integers(n)
+    visits[page] += 1
+print("surfer's visit shares:", (visits / visits.sum()).round(3))
+</code></pre></details>
+<details class="code"><summary>Ready to use <span>Python · NetworkX</span></summary><pre><code>import networkx as nx
+
+links = {0: [1, 2], 1: [2], 2: [0], 3: [2], 4: [2, 3], 5: [4], 6: [4, 5], 7: []}
+G = nx.DiGraph()
+G.add_nodes_from(links)
+G.add_edges_from((i, j) for i, outs in links.items() for j in outs)
+pr = nx.pagerank(G, alpha=0.85)                    # dead ends jump uniformly, as above
+print({k: round(v, 3) for k, v in pr.items()})
+ppr = nx.pagerank(G, alpha=0.85, personalization={6: 1})   # personalized: always teleport back to page 6
+print({k: round(v, 3) for k, v in ppr.items()})     # "pages related to 6", as used in recommendation
+</code></pre></details>
+
+
+
+
+<div class="quiz"><p><b>Check yourself.</b> Answer each question before you open it.</p>
+<details><summary>In an undirected graph, what does the diagonal entry $(A^2)_{ii}$ count?</summary><p>The walks of length 2 from $i$ back to $i$, one per neighbor, so $(A^2)_{ii} = d_i$, the degree.</p></details>
+<details><summary>Why does PageRank need teleporting?</summary><p>Without it, dead-end pages trap the surfer and closed groups of pages absorb all the time, so the walk may have no unique stationary distribution. Teleporting makes each page reachable from each other page.</p></details>
+<details><summary>At $\alpha = 0.85$, about how many power iterations shrink the error by a factor of 1,000?</summary><p>$0.85^t = 10^{-3}$ gives $t = \ln 1000/\ln(1/0.85) \approx 43$.</p></details>
+</div>
 
 <h3 id="ch-gnn"><span class="num"></span>Graph neural networks</h3>
 
@@ -4096,7 +4572,7 @@ print(trainer.state.log_history[-1])
 $$\mathbf h_v^{(l+1)} = \phi\Big(W_{\text{self}}\,\mathbf h_v^{(l)} + W_{\text{nbr}}\sum_{u\in\mathcal N(v)}\mathbf h_u^{(l)}\Big)$$
 <p>After $L$ layers, each node's vector depends on its $L$-hop neighborhood. The <i>graph convolutional network</i> (GCN) of Kipf and Welling writes one layer for all nodes in matrix form:</p>
 $$H^{(l+1)} = \phi\big(\tilde D^{-1/2}\tilde A\,\tilde D^{-1/2}H^{(l)}W^{(l)}\big), \qquad \tilde A = A + I$$
-<p>$A$ is the adjacency matrix, the added $I$ gives each node a self-loop, and $\tilde D$ is the diagonal degree matrix of $\tilde A$. The symmetric normalization averages over neighbors, so high-degree nodes don't blow up. Graph attention networks (GAT) learn the neighbor weights with attention (<a class="ref" href="#attention"></a>), and a transformer is a GNN on a fully connected graph.</p>
+<p>$A$ is the adjacency matrix (<a class="ref" href="#graphs"></a>), the added $I$ gives each node a self-loop, and $\tilde D$ is the diagonal degree matrix of $\tilde A$. The symmetric normalization averages over neighbors, so high-degree nodes don't blow up. Graph attention networks (GAT) learn the neighbor weights with attention (<a class="ref" href="#attention"></a>), and a transformer is a GNN on a fully connected graph.</p>
 <p>Too many layers cause <i>over-smoothing</i>: repeated averaging drives all node vectors toward the same value, and nodes become indistinguishable. For a graph-level prediction, such as whether a molecule is toxic, pool the node vectors into one vector with a sum or mean, then classify.</p>
 <p class="an"><b>Analogy.</b> Gossip in a village: each round, every person updates their opinion from their friends' opinions. After a few rounds, news has traveled a few friendships away; after too many, everyone holds the same opinion (over-smoothing).</p>
 <div class="viz" data-viz="gnn"><p class="cap">Two communities joined by one edge. Each node holds one number (color and label). Each press applies one normalized-averaging layer, $\tilde D^{-1/2}\tilde A\tilde D^{-1/2}\mathbf h$. Information spreads one hop per layer; after many layers both communities blur into a single profile set only by node degree (over-smoothing).</p></div>
@@ -4150,8 +4626,14 @@ print("accuracy on all nodes:", (out.argmax(1) == data.y).float().mean().item())
 
 
 
+<div class="quiz"><p><b>Check yourself.</b> Answer each question before you open it.</p>
+<details><summary>After three GCN layers, which nodes can influence a node's vector?</summary><p>The nodes within three hops, since each layer passes messages one hop.</p></details>
+<details><summary>What is over-smoothing?</summary><p>Repeated neighbor averaging drives all node vectors toward the same value, so a deep GCN makes nodes hard to tell apart.</p></details>
+</div>
+
 <h3 id="build-graph">Projects to build</h3>
 <ul class="build">
+<li><b><a href="https://github.com/networkx/networkx" target="_blank" rel="noopener">networkx/networkx</a></b>: the standard Python library for graph algorithms, with small example graphs built in. <i>Project:</i> load the co-appearance network of the characters in <i>Les Misérables</i> with <code>nx.les_miserables_graph()</code>, rank the characters by degree and by PageRank, and find the shortest path between two minor characters. Then split the graph in two with the Laplacian's second eigenvector, and explain where the degree and PageRank rankings disagree. <i>Practices</i> <a class="ref" href="#graphs"></a>, <a class="ref" href="#pagerank"></a>.</li>
 <li><b><a href="https://github.com/pyg-team/pytorch_geometric" target="_blank" rel="noopener">pyg-team/pytorch_geometric</a></b>: PyTorch Geometric, a popular GNN library built on PyTorch. <i>Project:</i> run <code>examples/gcn.py</code> to classify papers in the Cora citation graph, then switch to <code>examples/gat.py</code> and compare the accuracy. <i>Practices</i> <a class="ref" href="#gnn"></a>, <a class="ref" href="#attention"></a>.</li>
 <li><b><a href="https://github.com/snap-stanford/ogb" target="_blank" rel="noopener">snap-stanford/ogb</a></b>: the Open Graph Benchmark: realistic graph datasets with fixed splits and public leaderboards. <i>Project:</i> train a GNN on ogbn-arxiv, which asks you to predict the subject of each paper in a citation graph (<code>examples/nodeproppred/arxiv</code>), and compare your score with the leaderboard. <i>Practices</i> <a class="ref" href="#gnn"></a>.</li>
 </ul>
@@ -4227,6 +4709,11 @@ print(CRS("EPSG:32648").name)
 
 
 
+<div class="quiz"><p><b>Check yourself.</b> Answer each question before you open it.</p>
+<details><summary>Why shouldn't you run k-NN with Euclidean distance on raw (latitude, longitude) pairs?</summary><p>A degree of longitude shrinks toward the poles, by the cosine of the latitude, and the Earth is curved. Use the haversine distance, or project the points first.</p></details>
+<details><summary>Web Mercator keeps angles. What does it distort?</summary><p>Areas, by a factor $1/\cos^2\varphi$: Greenland looks as big as Africa, which is about 14 times larger.</p></details>
+</div>
+
 <h3 id="ch-geodata"><span class="num"></span>Vector and raster data</h3>
 
 <h4 id="polygon"><span class="num"></span>Vector data: points, lines and polygons <span class="lvl l1">Beginner</span></h4>
@@ -4298,6 +4785,11 @@ print(ndvi.shape, float(ndvi.mean()), profile["crs"])
 </code></pre></details>
 
 
+
+<div class="quiz"><p><b>Check yourself.</b> Answer each question before you open it.</p>
+<details><summary>How does the ray-casting rule test whether a point lies inside a polygon?</summary><p>Cast a ray from the point in a fixed direction and count the polygon edges it crosses: an odd count means inside, an even count outside.</p></details>
+<details><summary>What is the NDVI of a pixel with near-infrared reflectance 0.5 and red reflectance 0.1?</summary><p>$(0.5 - 0.1)/(0.5 + 0.1) \approx 0.67$, typical of dense, healthy vegetation.</p></details>
+</div>
 
 <h3 id="ch-geostats"><span class="num"></span>Spatial statistics and machine learning</h3>
 
@@ -4439,13 +4931,624 @@ print("block CV ", round(score(GroupKFold(5), groups=groups), 3))               
 
 
 
+<div class="quiz"><p><b>Check yourself.</b> Answer each question before you open it.</p>
+<details><summary>What does a Moran's I close to +1 tell you?</summary><p>Strong positive spatial autocorrelation: similar values cluster in space.</p></details>
+<details><summary>Why does random k-fold cross-validation overrate a model on spatial data?</summary><p>Nearby points are correlated, so each test point has close neighbors in the training folds and the model interpolates. Spatial (block) cross-validation holds out whole areas.</p></details>
+<details><summary>What does kriging give you that inverse distance weighting doesn't?</summary><p>An uncertainty at each location, the kriging variance, which comes from the fitted variogram. IDW gives a weighted average with no error estimate.</p></details>
+</div>
+
 <h3 id="build-geo">Projects to build</h3>
 <ul class="build">
 <li><b><a href="https://github.com/microsoft/torchgeo" target="_blank" rel="noopener">microsoft/torchgeo</a></b>: a PyTorch library of datasets, samplers, transforms and pretrained models for satellite and aerial images. <i>Project:</i> train a land-cover classifier on EuroSAT, a set of labeled Sentinel-2 image patches (<code>torchgeo/datasets/eurosat.py</code>), add an NDVI band with the <code>AppendNDVI</code> transform, and evaluate it with a spatial split such as <code>random_grid_cell_assignment</code> from <code>torchgeo/datasets/splits.py</code>. <i>Practices</i> <a class="ref" href="#ndvi"></a>, <a class="ref" href="#spatialcv"></a>, <a class="ref" href="#conv"></a>.</li>
 <li><b><a href="https://github.com/geopandas/geopandas" target="_blank" rel="noopener">geopandas/geopandas</a></b>: pandas tables with a geometry column, for vector data. <i>Project:</i> load Cambodia's province boundaries (for example from the Humanitarian Data Exchange), reproject them to UTM zone 48N with <code>to_crs(epsg=32648)</code>, compute each province's area, and count schools or health centers per province with a spatial join (<code>sjoin</code>). PySAL's esda package computes Moran's I on the same table. <i>Practices</i> <a class="ref" href="#projection"></a>, <a class="ref" href="#polygon"></a>, <a class="ref" href="#moran"></a>.</li>
 </ul>
 
-<h2 id="appendix">Appendix</h2>
+<h2 id="part-arch" data-layer="Architectures">Part X. Architectures</h2>
+<p>Parts II to IX teach algorithms: how a model computes its output and how it learns. An architecture fixes the wiring: which layers a network has and how they connect. Each network in this part recombines algorithms you have met. ResNet is convolution and batch normalization wrapped in residual connections; a Llama model is attention and a gated MLP, repeated 32 times.</p>
+<p>The map below links the two halves. Each topic after it draws one architecture with its tensor shapes and parameter counts. The first code block builds the network from basic layers; the second loads the library version.</p>
+<div class="viz" data-viz="archmap"><p class="cap">Algorithms on the left, architectures on the right. Click an architecture to light up the algorithms it combines, or click an algorithm to see which architectures use it. Drag the year slider to watch the families appear.</p></div>
+
+<h3 id="ch-convarch"><span class="num"></span>Convolutional architectures</h3>
+
+<h4 id="lenet"><span class="num"></span>From LeNet to VGG: reading a CNN <span class="lvl l1">Beginner</span></h4>
+<p>To read an architecture, follow one input through the network and write down the tensor shape after each layer. LeNet-5 (LeCun and others, 1998) read handwritten digits on bank checks:</p>
+$$32{\times}32{\times}1 \xrightarrow{\text{conv }5\times5} 28{\times}28{\times}6 \xrightarrow{\text{pool}} 14{\times}14{\times}6 \xrightarrow{\text{conv }5\times5} 10{\times}10{\times}16 \xrightarrow{\text{pool}} 5{\times}5{\times}16 \xrightarrow{\text{flatten}} 400 \to 120 \to 84 \to 10$$
+<p>You get each shape from the conv arithmetic (<a class="ref" href="#convshape"></a>): a 5 × 5 kernel without padding trims 4 pixels, and a 2 × 2 pool halves the size. Next to each shape, write two counts. A conv layer with $C_{\text{out}}$ kernels of size $K\times K\times C_{\text{in}}$ and an $H\times W$ output, and a dense layer from $n$ to $m$ units, cost</p>
+$$\text{params} = K^2C_{\text{in}}C_{\text{out}} + C_{\text{out}}, \quad \text{MACs} = HW\,K^2C_{\text{in}}C_{\text{out}} \qquad\qquad \text{params} = nm + m, \quad \text{MACs} = nm$$
+<p>A multiply-add (MAC) is one step $a \leftarrow a + w\,x$; hardware specs count it as 2 FLOPs. LeNet-5 holds 61,706 parameters and needs 416,520 multiply-adds per digit.</p>
+<p>VGG-16 (Simonyan and Zisserman, 2014) scales the same recipe up to 224 × 224 color images. Thirteen 3 × 3 conv layers, padded to keep the size, form five stages, and a 2 × 2 max pool ends each stage. The channels double after each pool (64, 128, 256, 512, 512) while the height and width halve, so the cost per layer stays level through the first four stages. Three dense layers follow. The counts show where VGG-16 spends its budget. The conv layers do 99% of the computing, because each kernel slides over thousands of positions. The dense layers hold 89% of the 138 million parameters: the first one maps $7\cdot7\cdot512 = 25{,}088$ numbers to 4,096 units, which takes 103 million weights. Later networks replace the flattening with <i>global average pooling</i>, which averages each feature map to one number. On VGG-16 that cuts the parameters to 15 million and leaves the compute at 15.3 billion multiply-adds.</p>
+<p class="an"><b>Analogy.</b> A CNN works like a chain of editors. Street reporters (the first layers) each describe a small patch of the scene. Each editor above them merges neighboring reports into fewer, richer ones that cover more ground. The chief editor (the dense layers) reads the final summary and decides.</p>
+<div class="viz" data-viz="lenet"><p class="cap">Each row is one layer with its output shape. The blue bar shows its share of the parameters, the orange bar its share of the multiply-adds. Switch between LeNet-5 and VGG-16, and tick global average pooling to watch the dense layers' weights disappear. Hover a row to see its formula.</p></div>
+<details class="code"><summary>From scratch <span>Python · NumPy</span></summary><pre><code>import numpy as np
+from numpy.lib.stride_tricks import sliding_window_view
+
+rng = np.random.default_rng(0)
+
+def conv(x, c_out, k):                         # x: (H, W, C_in), no padding, stride 1
+    w, b = rng.normal(0, 0.1, (k, k, x.shape[2], c_out)), np.zeros(c_out)
+    patches = sliding_window_view(x, (k, k), axis=(0, 1))          # (H-k+1, W-k+1, C_in, k, k)
+    return np.tanh(np.einsum("hwcij,ijcd-&gt;hwd", patches, w) + b), w.size + b.size
+
+def pool(x):                                   # 2×2 max pool, stride 2
+    H, W, C = x.shape
+    return x.reshape(H // 2, 2, W // 2, 2, C).max(axis=(1, 3)), 0
+
+def dense(x, m):
+    w, b = rng.normal(0, 0.1, (x.size, m)), np.zeros(m)
+    return np.tanh(x.ravel() @ w + b), w.size + b.size
+
+layers = [("conv 5×5, 6", lambda x: conv(x, 6, 5)), ("max pool", pool),
+          ("conv 5×5, 16", lambda x: conv(x, 16, 5)), ("max pool", pool),
+          ("dense 120", lambda x: dense(x, 120)), ("dense 84", lambda x: dense(x, 84)), ("dense 10", lambda x: dense(x, 10))]
+x, total = rng.random((32, 32, 1)), 0
+for name, layer in layers:
+    x, p = layer(x)
+    total += p
+    print(f"{name:13s} -&gt; {str(x.shape):12s} {p:6,d} params")
+print(f"total {total:,} params")
+
+def vgg16_counts(gap=False):
+    """Parameters and multiply-adds of VGG-16 at 224×224, read off its configuration."""
+    cfg = [64, 64, "M", 128, 128, "M", 256, 256, 256, "M", 512, 512, 512, "M", 512, 512, 512, "M"]
+    H, C, params, macs = 224, 3, 0, 0
+    for v in cfg:
+        if v == "M":
+            H //= 2
+            continue
+        params += 9 * C * v + v
+        macs += H * H * 9 * C * v
+        C = v
+    dense_layers = [(C, 1000)] if gap else [(H * H * C, 4096), (4096, 4096), (4096, 1000)]
+    for n, m in dense_layers:
+        params += n * m + m
+        macs += n * m
+    return params, macs
+
+for gap in (False, True):
+    p, m = vgg16_counts(gap)
+    print(f"VGG-16, global pooling={gap}: {p:,} params, {m:,} multiply-adds")
+</code></pre></details>
+<details class="code"><summary>Ready to use <span>Python · PyTorch + torchvision</span></summary><pre><code>import torch
+from torch import nn
+from torch.utils.flop_counter import FlopCounterMode
+from torchvision.models import vgg16
+
+lenet = nn.Sequential(
+    nn.Conv2d(1, 6, 5), nn.Tanh(), nn.MaxPool2d(2),
+    nn.Conv2d(6, 16, 5), nn.Tanh(), nn.MaxPool2d(2),
+    nn.Flatten(), nn.Linear(400, 120), nn.Tanh(), nn.Linear(120, 84), nn.Tanh(), nn.Linear(84, 10))
+x = torch.randn(1, 1, 32, 32)
+for layer in lenet:
+    x = layer(x)
+    print(f"{type(layer).__name__:9s} {tuple(x.shape)}")
+
+count = lambda m: sum(p.numel() for p in m.parameters())
+with FlopCounterMode(display=False) as fc:
+    lenet(torch.randn(1, 1, 32, 32))
+print(f"LeNet-5: {count(lenet):,} params, {fc.get_total_flops() // 2:,} multiply-adds")   # the counter reports 2 FLOPs per multiply-add
+
+vgg = vgg16(weights=None)                   # weights="DEFAULT" downloads the ImageNet weights (about 530 MB)
+print(f"VGG-16: {count(vgg):,} params, {count(vgg.classifier):,} of them in the three dense layers")
+</code></pre></details>
+
+
+
+<h4 id="resnet"><span class="num"></span>ResNet: stages and bottleneck blocks <span class="lvl l3">Advanced</span></h4>
+<p>ResNet (He and others, 2015) arranges residual blocks (<a class="ref" href="#residual"></a>) in a layout that later CNNs reuse. A <i>stem</i> shrinks the image fast: a 7 × 7 convolution with stride 2 and a 3 × 3 max pool with stride 2 take a 224 × 224 image to 56 × 56 with 64 channels. Four <i>stages</i> follow, each a run of identical blocks at one resolution. The first block of stages 2, 3 and 4 uses stride 2, which halves the height and width, and doubles the channels. The <i>head</i> is a global average pool and one dense layer.</p>
+<p>ResNet-18 and 34 use a <i>basic block</i> of two 3 × 3 convolutions. ResNet-50 and deeper use a <i>bottleneck block</i>: a 1 × 1 convolution squeezes the channels by 4, a 3 × 3 convolution works on the narrow tensor, and a second 1 × 1 convolution expands the channels again. Batch normalization (<a class="ref" href="#batchnorm"></a>) and a ReLU follow each convolution, and the block adds its input before the last ReLU: $\mathbf y = \operatorname{ReLU}(\mathbf x + F(\mathbf x))$. At 256 channels the bottleneck saves a lot:</p>
+$$\underbrace{256\cdot64}_{1\times1\text{ squeeze}} + \underbrace{9\cdot64\cdot64}_{3\times3} + \underbrace{64\cdot256}_{1\times1\text{ expand}} = 69{,}632 \qquad\text{against}\qquad 2\cdot9\cdot256^2 = 1{,}179{,}648$$
+<p>That is 17 times fewer weights for a block of the same width. If a block changes the shape, the shortcut can't be the identity, so a 1 × 1 convolution with the same stride projects $\mathbf x$ to the new shape (a <i>projection shortcut</i>). The number in the name is the count of weighted layers: ResNet-50 has 1 stem convolution, 16 bottleneck blocks of 3 convolutions and 1 dense layer. Bottlenecks make depth cheap. ResNet-152 is more than nine times deeper than VGG-16, yet it needs fewer than half the parameters and three quarters of the multiply-adds. For your own images, start from ImageNet weights, swap the dense layer for one with your number of classes, and fine-tune (transfer learning).</p>
+<p class="an"><b>Analogy.</b> A bottleneck block works like a committee. A full 3 × 3 layer would be a debate among all 256 members; the bottleneck sends 64 delegates to debate, and they report back to the full committee. The shortcut carries the original proposal through unchanged, and the delegates propose amendments to it.</p>
+<div class="viz" data-viz="resnet"><p class="cap">Each colored bar is one residual block; orange blocks change the shape and use a projection shortcut. Pick a depth and compare the totals with VGG-16, then hover a block to see its shapes. The counts match torchvision's models.</p></div>
+<details class="code"><summary>From scratch <span>Python · PyTorch</span></summary><pre><code>import torch
+from torch import nn
+
+class Bottleneck(nn.Module):
+    def __init__(self, c_in, width, stride):
+        super().__init__()
+        c_out = 4 * width
+        self.f = nn.Sequential(
+            nn.Conv2d(c_in, width, 1, bias=False), nn.BatchNorm2d(width), nn.ReLU(),                 # squeeze
+            nn.Conv2d(width, width, 3, stride, 1, bias=False), nn.BatchNorm2d(width), nn.ReLU(),     # 3×3 on the narrow tensor
+            nn.Conv2d(width, c_out, 1, bias=False), nn.BatchNorm2d(c_out))                          # expand
+        self.shortcut = nn.Identity() if stride == 1 and c_in == c_out else nn.Sequential(
+            nn.Conv2d(c_in, c_out, 1, stride, bias=False), nn.BatchNorm2d(c_out))                   # projection shortcut
+
+    def forward(self, x):
+        return torch.relu(self.shortcut(x) + self.f(x))
+
+def resnet(blocks=(3, 4, 6, 3), classes=1000):
+    layers = [nn.Conv2d(3, 64, 7, 2, 3, bias=False), nn.BatchNorm2d(64), nn.ReLU(), nn.MaxPool2d(3, 2, 1)]   # stem
+    c_in = 64
+    for stage, n in enumerate(blocks):
+        width = 64 * 2 ** stage
+        for i in range(n):
+            layers.append(Bottleneck(c_in, width, stride=2 if i == 0 and stage &gt; 0 else 1))
+            c_in = 4 * width
+    layers += [nn.AdaptiveAvgPool2d(1), nn.Flatten(), nn.Linear(c_in, classes)]                               # head
+    return nn.Sequential(*layers)
+
+model = resnet()                                 # (3, 4, 6, 3) = ResNet-50; (3, 4, 23, 3) = ResNet-101
+x = torch.randn(1, 3, 224, 224)
+for i in (3, 6, 10, 16, 19):                     # shape after the stem and after each stage
+    print(tuple(model[: i + 1](x).shape))
+print(f"{sum(p.numel() for p in model.parameters()):,} parameters")   # 25,557,032, the same as torchvision's resnet50
+</code></pre></details>
+<details class="code"><summary>Ready to use <span>Python · torchvision</span></summary><pre><code>import torch
+from torch import nn
+from torch.utils.flop_counter import FlopCounterMode
+from torchvision.models import resnet18, resnet34, resnet50, resnet101, resnet152
+
+x = torch.randn(1, 3, 224, 224)
+for build in (resnet18, resnet34, resnet50, resnet101, resnet152):
+    model = build(weights=None).eval()           # weights="DEFAULT" downloads ImageNet weights
+    with FlopCounterMode(display=False) as fc:
+        model(x)
+    print(f"{build.__name__:10s} {sum(p.numel() for p in model.parameters()) / 1e6:5.1f} M params, {fc.get_total_flops() / 2e9:5.2f} G multiply-adds")
+
+model = resnet50(weights=None)                   # transfer learning: freeze the body, train a new head
+model.requires_grad_(False)
+model.fc = nn.Linear(model.fc.in_features, 5)    # 5 classes of your own; the new layer is trainable
+print(sum(p.numel() for p in model.parameters() if p.requires_grad), "trainable parameters")   # 2048·5 + 5
+</code></pre></details>
+
+
+
+<h4 id="unet"><span class="num"></span>U-Net: encoder, decoder and skip connections <span class="lvl l3">Advanced</span></h4>
+<p>Segmentation labels each pixel (<a class="ref" href="#dice"></a>), so the output needs the input's resolution. A classifier such as ResNet discards resolution on purpose: by its last stage a 224 × 224 image has shrunk to 7 × 7. U-Net (Ronneberger and others, 2015) adds a mirror image of that path. The <i>encoder</i> repeats two 3 × 3 convolutions and a 2 × 2 max pool, halving the size and doubling the channels at each level, from 64 channels to 1,024 at the bottom. The <i>decoder</i> climbs back: at each level a 2 × 2 transposed convolution with stride 2 doubles the size and halves the channels, and two 3 × 3 convolutions follow. A final 1 × 1 convolution turns the 64 channels into one score per class for each pixel. The network has about 31 million parameters.</p>
+<p>At the bottom of the U, each cell summarizes a 16 × 16 patch. The features there tell you what the patch contains but not where an edge falls inside it. <i>Skip connections</i> carry the missing detail across. At each level, the decoder concatenates its upsampled tensor with the encoder tensor of the same size before it convolves:</p>
+$$\mathbf d_l = \operatorname{conv}\big(\big[\operatorname{up}(\mathbf d_{l+1});\ \mathbf e_l\big]\big)$$
+<p>Here $\mathbf e_l$ is the encoder output at level $l$, and $[\,\cdot\,;\,\cdot\,]$ stacks channels. The encoder tensor still holds the fine detail that pooling removed, so the decoder can place boundaries to the pixel. A transposed convolution with kernel 2 and stride 2 maps each input cell to a 2 × 2 block of outputs through learned weights. U-Net trains well on a few hundred labeled images, which made it the default in medical imaging. Diffusion models (<a class="ref" href="#diffusion"></a>) use a U-Net as the noise predictor and feed the time step into each level.</p>
+<p class="an"><b>Analogy.</b> Finding an address on an online map: you zoom out to see the whole city and pick the district, then zoom back in. On the way back in, the U-Net doesn't have to guess the street layout from the blurry city view. The skip connections hand it the detailed view it saw on the way out, at the same zoom level.</p>
+<div class="viz" data-viz="unet"><p class="cap">A simplified U-Net on a 64 × 64 image. The encoder averages each 2 × 2 block, the decoder copies each cell into a 2 × 2 block, and each skip connection hands back the detail lost at its level. A trained U-Net learns its filters, but the information flows the same way. The figure thresholds the output into a mask and scores it against the true mask. Turn skips off, or deepen the U, and watch the small objects vanish.</p></div>
+<details class="code"><summary>From scratch <span>Python · PyTorch</span></summary><pre><code>import torch
+from torch import nn
+
+def double_conv(c_in, c_out):
+    return nn.Sequential(nn.Conv2d(c_in, c_out, 3, padding=1), nn.ReLU(), nn.Conv2d(c_out, c_out, 3, padding=1), nn.ReLU())
+
+class UNet(nn.Module):
+    def __init__(self, c_in=1, classes=2, widths=(64, 128, 256, 512, 1024)):
+        super().__init__()
+        self.down = nn.ModuleList(double_conv(a, b) for a, b in zip((c_in,) + widths[:-1], widths))
+        self.up = nn.ModuleList(nn.ConvTranspose2d(b, a, 2, stride=2) for a, b in zip(widths[:-1], widths[1:]))
+        self.dec = nn.ModuleList(double_conv(2 * a, a) for a in widths[:-1])
+        self.out = nn.Conv2d(widths[0], classes, 1)      # one score map per class
+
+    def forward(self, x):
+        skips = []
+        for block in self.down[:-1]:                     # encoder: convolve, keep a copy, halve the size
+            x = block(x)
+            skips.append(x)
+            x = nn.functional.max_pool2d(x, 2)
+        x = self.down[-1](x)                             # bottom of the U: 1/16 of the input size
+        for up, dec in zip(reversed(self.up), reversed(self.dec)):
+            x = dec(torch.cat([up(x), skips.pop()], dim=1))   # decoder: double the size, concatenate the skip
+        return self.out(x)
+
+model = UNet()
+x = torch.randn(1, 1, 256, 256)
+print(model(x).shape)                                    # (1, 2, 256, 256): same size as the input
+print(f"{sum(p.numel() for p in model.parameters()):,} parameters")
+</code></pre></details>
+<details class="code"><summary>Ready to use <span>Python · segmentation-models-pytorch</span></summary><pre><code>import torch
+import segmentation_models_pytorch as smp
+
+# U-Net with a ResNet-34 encoder; encoder_weights="imagenet" downloads a pretrained encoder
+model = smp.Unet(encoder_name="resnet34", encoder_weights=None, in_channels=3, classes=4)
+x = torch.randn(2, 3, 256, 256)
+logits = model(x)
+print(logits.shape)                                      # (2, 4, 256, 256): one score map per class
+masks = torch.randint(0, 4, (2, 256, 256))
+print(smp.losses.DiceLoss(mode="multiclass")(logits, masks))
+print(f"{sum(p.numel() for p in model.parameters()):,} parameters")
+</code></pre></details>
+
+
+
+<h4 id="yolo"><span class="num"></span>YOLO: detection in one pass <span class="lvl l3">Advanced</span></h4>
+<p>A two-stage detector such as Faster R-CNN first proposes regions that might hold an object, then classifies each region. YOLO (Redmon and others, 2016) does both in one forward pass, which made real-time detection practical. YOLOv1 resizes the image to 448 × 448, runs a CNN, and reads the result as an $S\times S$ grid with $S = 7$. The cell that contains an object's center is <i>responsible</i> for that object. Each cell predicts $B$ boxes, each with five numbers $(x, y, w, h, c)$, plus $C$ class probabilities shared by the cell. The whole output is one tensor:</p>
+$$S\times S\times(5B + C) = 7\times7\times(5\cdot2 + 20) = 7\times7\times30$$
+<p>$x$ and $y$ place the box center inside the cell, $w$ and $h$ give its size as a fraction of the image, and the confidence $c$ estimates $P(\text{object})\cdot\operatorname{IoU}$ (<a class="ref" href="#iou"></a>) between the box and the true one. During training, the predictor whose box overlaps the object best takes responsibility for it. The loss sums squared errors over the tensor, with weights: box errors count 5 times, confidence errors in empty cells 0.5 times. It compares $\sqrt w$ and $\sqrt h$, so a 10-pixel error costs more on a small box than on a large one. At test time each box scores $c\cdot P(\text{class}\mid\text{object})$ for each class; you drop the low scores and run non-maximum suppression.</p>
+<p>Each cell predicts one class, so two objects whose centers share a cell compete, and YOLOv1 misses flocks of small objects. Later versions fix this. YOLOv2 and v3 predict offsets from <i>anchor boxes</i>, preset box shapes per cell, and v3 predicts at three scales (strides 8, 16 and 32), so small objects get a fine grid. YOLOv8 drops the anchors and predicts each box from its grid point. For a 640 × 640 input its head scores $80^2 + 40^2 + 20^2 = 8{,}400$ grid points, each with 4 box numbers and 80 class scores. Across versions the structure stays the same: a <i>backbone</i> CNN extracts features, a <i>neck</i> mixes them across scales, and a <i>head</i> outputs the boxes.</p>
+<p class="an"><b>Analogy.</b> A seating chart for a classroom. You divide the room (the image) into desks (cells), and each student reports whatever lands on their desk: where it sits, how big it is, and what it is. The whole class reports at once, from one glance at the room. If two things land on one desk, the student reports one of them.</p>
+<div class="viz" data-viz="yolo"><p class="cap">Dots mark object centers. Each shaded cell is responsible for the object whose center it holds, and red cells hold two centers. Change the grid size $S$ and the boxes per cell $B$, then click a cell to see its slice of the target tensor.</p></div>
+<details class="code"><summary>From scratch <span>Python · NumPy</span></summary><pre><code>import numpy as np
+
+S, B, C = 7, 2, 20                                     # grid size, boxes per cell, classes (PASCAL VOC)
+
+def encode(boxes, labels):
+    """boxes: (cx, cy, w, h) in [0, 1] image units -&gt; YOLOv1 target tensor S × S × (5B + C)."""
+    T = np.zeros((S, S, 5 * B + C))
+    for (cx, cy, w, h), k in zip(boxes, labels):
+        i, j = int(cy * S), int(cx * S)                # the cell that holds the center is responsible
+        if T[i, j, 4] == 1:
+            print(f"cell ({i}, {j}) is taken: YOLOv1 loses the object of class {k}")
+            continue
+        T[i, j, :5] = cx * S - j, cy * S - i, w, h, 1.0   # x, y relative to the cell; w, h relative to the image
+        T[i, j, 5 * B + k] = 1.0                          # one class per cell
+    return T
+
+def decode(T, threshold=0.5):
+    found = []
+    for i, j in np.argwhere(T[..., 4] &gt; threshold).tolist():
+        x, y, w, h, c = T[i, j, :5].tolist()
+        found.append((round((j + x) / S, 3), round((i + y) / S, 3), w, h, int(T[i, j, 5 * B:].argmax())))
+    return found
+
+boxes = [(0.30, 0.60, 0.35, 0.40), (0.72, 0.45, 0.20, 0.50), (0.74, 0.47, 0.05, 0.08)]
+T = encode(boxes, labels=[6, 14, 2])                   # car, person, and a bird whose center shares the person's cell
+print(T.shape, T.size, "numbers")
+print(decode(T))
+</code></pre></details>
+<details class="code"><summary>Ready to use <span>Python · ultralytics</span></summary><pre><code>import torch
+from ultralytics import YOLO
+
+model = YOLO("yolov8n.yaml")                    # the architecture with random weights; "yolov8n.pt" downloads trained weights
+model.info()                                     # layers, parameters, GFLOPs
+net = model.model.eval()
+with torch.no_grad():
+    pred = net(torch.zeros(1, 3, 640, 640))[0]   # raw head output, before non-maximum suppression
+print(pred.shape)                                # (1, 84, 8400): 4 box numbers + 80 class scores at 80² + 40² + 20² grid points
+# Trained detector: results = YOLO("yolov8n.pt")("photo.jpg"); results[0].boxes.xyxy, .cls, .conf
+</code></pre></details>
+
+
+
+<div class="quiz"><p><b>Check yourself.</b> Answer each question before you open it.</p>
+<details><summary>Where do VGG-16's parameters live, and where does its compute go?</summary><p>The three dense layers hold 89% of the 138 million parameters, while the conv layers do 99% of the multiply-adds.</p></details>
+<details><summary>Why does ResNet-50's bottleneck block start and end with 1 × 1 convolutions?</summary><p>They shrink the channels before the costly 3 × 3 layer and expand them after: 69,632 weights at 256 channels, against 1,179,648 for two 3 × 3 layers.</p></details>
+<details><summary>What would a U-Net lose without its skip connections?</summary><p>The fine detail that pooling removed. The decoder would produce blocky, blurred masks, and thin or small objects would vanish.</p></details>
+<details><summary>How many numbers does YOLOv1 output for $S = 7$, $B = 2$ and $C = 20$?</summary><p>$7\times 7\times(5\cdot 2 + 20) = 1{,}470$.</p></details>
+</div>
+
+<h3 id="ch-seqarch"><span class="num"></span>Sequence and attention architectures</h3>
+
+<h4 id="wavenet"><span class="num"></span>WaveNet: dilated causal convolutions <span class="lvl l2">Intermediate</span></h4>
+<p>Audio has 16,000 or more samples per second, and a model that predicts the next sample needs to see a long stretch of the past. An RNN (<a class="ref" href="#rnn"></a>) steps through the samples one at a time, which makes training slow. WaveNet (van den Oord and others, 2016) uses a stack of one-dimensional convolutions with two changes. A <i>causal</i> convolution looks at the current and earlier steps: you pad $(K-1)D$ zeros on the left and none on the right, so the output at time $t$ can't see the future. A <i>dilated</i> convolution with dilation $D$ spaces its taps $D$ steps apart (<a class="ref" href="#convshape"></a>):</p>
+$$y_t = \sum_{k=0}^{K-1} w_k\,x_{t - kD}$$
+<p>WaveNet uses kernel size $K = 2$ and doubles the dilation at each layer: 1, 2, 4, …, 512. The receptive field of a stack of $L$ layers is</p>
+$$R = 1 + (K-1)\sum_{l=1}^{L} D_l = 1 + (1 + 2 + 4 + \dots + 512) = 1{,}024$$
+<p>Ten layers see 1,024 samples, where ten undilated layers would see 11. The receptive field doubles with each layer, while the parameters grow by one layer's worth. Each layer uses the gated activation of the LSTM (<a class="ref" href="#lstm"></a>), $\mathbf z = \tanh(W_f * \mathbf x)\odot\sigma(W_g * \mathbf x)$, inside a residual connection (<a class="ref" href="#residual"></a>). The output is a softmax over 256 amplitude levels. You train on all time steps in parallel, because the training data holds the true past; to generate, you run one sample at a time and feed each output back in. Temporal convolutional networks (TCNs) reuse this design for sensor data and forecasting.</p>
+<p class="an"><b>Analogy.</b> A knockout tournament. Each match combines two players, and each round pairs winners from brackets twice as far apart as the round before. After 10 rounds the champion's result depends on all 1,024 players, though each match looked at two.</p>
+<div class="viz" data-viz="wavenet"><p class="cap">Each row is a layer and each column a time step. The orange cone shows the inputs that the selected output can see; no edge points to the future. Add layers, switch the dilation between doubling and none, or click a top node to pick another output.</p></div>
+<details class="code"><summary>From scratch <span>Python · NumPy</span></summary><pre><code>import numpy as np
+
+def causal_conv(x, w, dilation):
+    """y_t = Σ_k w[k] x_{t - k·dilation}, with zeros before t = 0."""
+    K, T = len(w), len(x)
+    xp = np.concatenate([np.zeros((K - 1) * dilation), x])          # pad on the left only: no future leaks in
+    return sum(w[k] * xp[(K - 1 - k) * dilation:(K - 1 - k) * dilation + T] for k in range(K))
+
+rng = np.random.default_rng(0)
+x = np.zeros(4096)
+x[0] = 1.0                                                           # an impulse at t = 0
+for name, dilations in [("dilated 1, 2, 4, ..., 512", [2 ** l for l in range(10)]), ("plain, dilation 1", [1] * 10)]:
+    y = x
+    for d in dilations:
+        y = causal_conv(y, rng.uniform(0.5, 1.0, size=2), d)        # kernel size 2, positive weights
+    print(f"{name}: receptive field {np.count_nonzero(y)} steps")   # 1 + Σ dilations: 1,024 and 11
+</code></pre></details>
+<details class="code"><summary>Ready to use <span>Python · PyTorch</span></summary><pre><code>import torch
+import torch.nn.functional as F
+from torch import nn
+
+class GatedResidual(nn.Module):
+    """One WaveNet layer: dilated causal conv, gated activation, residual connection."""
+    def __init__(self, channels, dilation, K=2):
+        super().__init__()
+        self.pad = (K - 1) * dilation
+        self.conv = nn.Conv1d(channels, 2 * channels, K, dilation=dilation)    # filter and gate in one conv
+        self.mix = nn.Conv1d(channels, channels, 1)
+
+    def forward(self, x):                                                     # x: (batch, channels, time)
+        f, g = self.conv(F.pad(x, (self.pad, 0))).chunk(2, dim=1)            # pad on the left only
+        return x + self.mix(torch.tanh(f) * torch.sigmoid(g))
+
+net = nn.Sequential(*[GatedResidual(32, 2 ** l) for l in range(10)])
+x = torch.randn(1, 32, 2048, requires_grad=True)
+net(x)[0, :, 1500].sum().backward()              # which input steps can change output step 1500?
+seen = x.grad.abs().sum(1)[0].nonzero().flatten()
+print(seen.min().item(), seen.max().item(), len(seen))   # 477 ... 1500: 1,024 steps, nothing after 1500
+</code></pre></details>
+
+
+
+<h4 id="encdec"><span class="num"></span>The encoder-decoder transformer and its three families <span class="lvl l4">Expert</span></h4>
+<p>The first transformer (Vaswani and others, 2017) translated sentences, so it kept the encoder-decoder layout of seq2seq models (<a class="ref" href="#seq2seq"></a>) and replaced the RNNs with attention (<a class="ref" href="#attention"></a>). The encoder is a stack of $N = 6$ blocks (<a class="ref" href="#transformer"></a>), each with self-attention and a feed-forward network, and it reads the whole source sentence at once. Each decoder block has three sublayers: masked self-attention over the words written so far, <i>cross-attention</i>, and a feed-forward network. In cross-attention the queries come from the decoder, and the keys and values come from the encoder's final output $H$:</p>
+$$\operatorname{CrossAttn}(Y, H) = \operatorname{softmax}\!\Big(\frac{(YW_Q)(HW_K)^\top}{\sqrt{d_k}}\Big)\,HW_V$$
+<p>Each attention gets its own mask. In the encoder, each source token sees each source token. In the decoder's self-attention, target token $i$ sees targets 1 to $i$. In cross-attention, each target token sees each source token. The base model used $d = 512$, 8 heads and a feed-forward width of 2,048: about 65 million parameters.</p>
+<p>Later models kept one half or both, and you can tell them apart by their masks:</p>
+<ul>
+<li><i>Encoder-only</i> (BERT, <a class="ref" href="#bert"></a>): full attention over the input. Good for classification, tagging and embeddings for search.</li>
+<li><i>Decoder-only</i> (GPT, Llama): one causal stack reads the prompt and writes the answer as a single sequence. Good for generation; it scales well, and most large language models use it.</li>
+<li><i>Encoder-decoder</i> (T5, BART, Whisper): full attention over the input, causal attention over the output, and cross-attention between them. Good for tasks with a clear input and output, such as translation, summarization and speech recognition.</li>
+</ul>
+<p>A <i>prefix language model</i> sits between the last two: one stack, with full attention inside the prompt and causal attention after it.</p>
+<p class="an"><b>Analogy.</b> Translation by a two-person team. The reader (the encoder) studies the whole English page and takes notes. The writer (the decoder) writes the French text word by word, rereading their own draft (masked self-attention) and checking the reader's notes (cross-attention). A decoder-only model is one person who reads the page aloud and keeps talking; an encoder-only model reads the page and answers questions about it but writes no prose.</p>
+<div class="viz" data-viz="encdec"><p class="cap">Attention masks for translating "the black cat sleeps" into "le chat noir dort". Each row is a query token and each colored cell a key it may read. Pick an architecture to see its masks, and click a row to list what that token reads.</p></div>
+<details class="code"><summary>From scratch <span>Python · NumPy</span></summary><pre><code>import numpy as np
+
+rng = np.random.default_rng(0)
+d = 16
+
+def attend(Q, K, V, mask):                       # mask[i, j] = True: query i may see key j
+    s = np.where(mask, Q @ K.T / np.sqrt(d), -np.inf)
+    w = np.exp(s - s.max(1, keepdims=True))
+    return (w / w.sum(1, keepdims=True)) @ V
+
+W = {name: rng.normal(0, d ** -0.5, (3, d, d)) for name in ("enc", "self", "cross")}   # Q, K, V maps per sublayer
+
+def encoder(X):                                  # full self-attention over the source
+    Wq, Wk, Wv = W["enc"]
+    return X + attend(X @ Wq, X @ Wk, X @ Wv, np.ones((len(X), len(X)), bool))
+
+def decoder(Y, H):
+    n = len(Y)
+    Wq, Wk, Wv = W["self"]
+    Y = Y + attend(Y @ Wq, Y @ Wk, Y @ Wv, np.tril(np.ones((n, n), bool)))    # causal self-attention
+    Wq, Wk, Wv = W["cross"]
+    return Y + attend(Y @ Wq, H @ Wk, H @ Wv, np.ones((n, len(H)), bool))      # cross-attention: keys and values from H
+
+src, tgt = rng.normal(size=(4, d)), rng.normal(size=(5, d))   # 4 source tokens, 5 target tokens
+H = encoder(src)
+out = decoder(tgt, H)
+tgt2 = tgt.copy()
+tgt2[4] += 10.0                                  # change the last target token
+print(out.shape, np.allclose(decoder(tgt2, H)[:4], out[:4]))   # True: earlier positions never see later ones
+</code></pre></details>
+<details class="code"><summary>Ready to use <span>Python · PyTorch</span></summary><pre><code>import torch
+from torch import nn
+
+model = nn.Transformer(d_model=512, nhead=8, num_encoder_layers=6, num_decoder_layers=6,
+                       dim_feedforward=2048, batch_first=True)          # the base model of the 2017 paper
+src, tgt = torch.randn(2, 10, 512), torch.randn(2, 7, 512)            # embedded source and target, batch of 2
+tgt_mask = nn.Transformer.generate_square_subsequent_mask(7)          # causal mask: -inf above the diagonal
+print(model(src, tgt, tgt_mask=tgt_mask).shape)                       # (2, 7, 512)
+blocks = sum(p.numel() for p in model.parameters())
+print(f"{blocks:,} in the blocks + {37000 * 512:,} in a shared 37,000-token embedding")   # about 63 M in total
+# Pretrained encoder-decoder models: AutoModelForSeq2SeqLM.from_pretrained("t5-small") in transformers
+</code></pre></details>
+
+
+
+<h4 id="llama"><span class="num"></span>Inside a modern LLM: the Llama block <span class="lvl l4">Expert</span></h4>
+<p>The GPT-2 block of 2019 (<a class="ref" href="#transformer"></a>) has changed in four places since. Llama (Touvron and others, 2023) collected the changes, and most open models share them. The block stays pre-norm, $\mathbf x \leftarrow \mathbf x + \operatorname{Attn}(\operatorname{Norm}(\mathbf x))$ followed by $\mathbf x \leftarrow \mathbf x + \operatorname{FFN}(\operatorname{Norm}(\mathbf x))$, and the parts inside change.</p>
+<p><i>RMSNorm</i> replaces LayerNorm (<a class="ref" href="#batchnorm"></a>). It skips the mean subtraction and the bias and divides by the root mean square: $\operatorname{RMSNorm}(\mathbf x) = \mathbf g\odot\mathbf x\big/\sqrt{\tfrac1d\sum_i x_i^2 + \epsilon}$. It costs less and trains as well. <i>RoPE</i> (<a class="ref" href="#posenc"></a>) rotates the queries and keys by position, in place of position vectors added to the input. <i>SwiGLU</i> replaces the ReLU or GELU feed-forward network with a gated one:</p>
+$$\operatorname{FFN}(\mathbf x) = W_2\big(\operatorname{SiLU}(W_1\mathbf x)\odot W_3\mathbf x\big), \qquad \operatorname{SiLU}(z) = z\,\sigma(z)$$
+<p>Three matrices replace two, so the hidden width drops from $4d$ to about $\frac83d$ to keep the parameter count. Llama also drops the biases from its linear layers.</p>
+<p><i>Grouped-query attention</i> (GQA) lets several query heads share one key head and one value head. With $h$ query heads and $g$ key-value heads, each group of $h/g$ query heads reads the same keys and values; $g = h$ gives ordinary multi-head attention, and $g = 1$ gives multi-query attention. The saving shows up in the KV cache (<a class="ref" href="#transformer"></a>), which stores the keys and values of each past token at each layer. For $L$ layers, head size $d_{\text{head}}$, $n$ tokens and $b$ bytes per number:</p>
+$$\text{KV cache} = 2\cdot L\cdot g\cdot d_{\text{head}}\cdot n\cdot b \ \text{bytes}$$
+<p>Llama 3 8B has $L = 32$, $h = 32$, $g = 8$ and $d_{\text{head}} = 128$. In 16-bit numbers its cache takes 128 KiB per token and 1 GiB for an 8,192-token context, four times less than with $g = 32$. During generation the GPU spends most of its time reading the weights and this cache from memory, so a smaller cache lets one GPU serve more users or longer contexts.</p>
+<p class="an"><b>Analogy.</b> A class of 32 students (query heads) studies from textbooks (keys and values). With multi-head attention each student owns a copy. With grouped-query attention, groups of four share a copy: each student still asks their own questions, and the school buys 8 books instead of 32.</p>
+<div class="viz" data-viz="llama"><p class="cap">Top: query heads, colored by the key-value head they share. Bottom: memory for the weights and for the KV cache. Pick a model, then change $g$, the context length and the number of sequences served at once. With long contexts and many users, the cache outgrows the model.</p></div>
+<details class="code"><summary>From scratch <span>Python · NumPy</span></summary><pre><code>import numpy as np
+
+rng = np.random.default_rng(0)
+d, h, g, dh, ff = 64, 8, 2, 8, 172               # width, query heads, key-value heads, head size, FFN width ≈ 8d/3
+
+def rms_norm(x, eps=1e-6):                       # the learned gain starts at 1, so it is left out here
+    return x / np.sqrt((x ** 2).mean(-1, keepdims=True) + eps)
+
+def rope(x, pos, base=10000.0):                  # rotate each coordinate pair by the angle pos·θ_i
+    theta = base ** (-np.arange(0, dh, 2) / dh)
+    c, s = np.cos(pos[:, None] * theta), np.sin(pos[:, None] * theta)
+    out = np.empty_like(x)
+    out[..., 0::2] = x[..., 0::2] * c - x[..., 1::2] * s
+    out[..., 1::2] = x[..., 0::2] * s + x[..., 1::2] * c
+    return out
+
+Wq, Wo = rng.normal(0, d ** -0.5, (2, d, d))
+Wk, Wv = rng.normal(0, d ** -0.5, (2, d, g * dh))      # g = 2 key-value heads: 4 times fewer columns than Wq
+W1, W3 = rng.normal(0, d ** -0.5, (2, d, ff))
+W2 = rng.normal(0, ff ** -0.5, (ff, d))
+silu = lambda z: z / (1 + np.exp(-z))
+
+def block(x, pos, cache):
+    """x: (n, d) new tokens at positions pos. cache keeps the keys and values of all earlier tokens."""
+    a = rms_norm(x)
+    heads = lambda m, k: m.reshape(-1, k, dh).transpose(1, 0, 2)
+    q, k, v = rope(heads(a @ Wq, h), pos), rope(heads(a @ Wk, g), pos), heads(a @ Wv, g)
+    cache["k"], cache["v"] = np.concatenate([cache["k"], k], 1), np.concatenate([cache["v"], v], 1)
+    K, V = np.repeat(cache["k"], h // g, 0), np.repeat(cache["v"], h // g, 0)   # each KV head serves h/g query heads
+    s = q @ K.transpose(0, 2, 1) / np.sqrt(dh)
+    s = np.where(np.arange(K.shape[1]) &gt; pos[:, None], -np.inf, s)            # causal mask
+    w = np.exp(s - s.max(-1, keepdims=True))
+    x = x + ((w / w.sum(-1, keepdims=True)) @ V).transpose(1, 0, 2).reshape(-1, d) @ Wo
+    b = rms_norm(x)
+    return x + (silu(b @ W1) * (b @ W3)) @ W2                                  # SwiGLU feed-forward
+
+empty = lambda: {"k": np.zeros((g, 0, dh)), "v": np.zeros((g, 0, dh))}
+x = rng.normal(size=(6, d))
+full = block(x, np.arange(6), empty())                                         # six tokens in one pass
+cache = empty()
+steps = np.vstack([block(x[t:t + 1], np.array([t]), cache) for t in range(6)])   # one token at a time, reusing the cache
+print(np.allclose(full, steps), "| cache holds", cache["k"].size + cache["v"].size, "numbers; with g = h it would hold", 2 * 6 * h * dh)
+</code></pre></details>
+<details class="code"><summary>Ready to use <span>Python · Hugging Face transformers</span></summary><pre><code>import torch
+from transformers import LlamaConfig, LlamaForCausalLM
+
+config = LlamaConfig(vocab_size=1000, hidden_size=256, intermediate_size=688, num_hidden_layers=4,
+                     num_attention_heads=8, num_key_value_heads=2)
+model = LlamaForCausalLM(config)                       # random weights, nothing to download
+print(model.model.layers[0])                           # q/k/v/o projections, SwiGLU MLP (gate, up, down), two RMSNorms
+print(sum(p.numel() for p in model.parameters()) / 1e6, "M parameters")
+ids = torch.randint(0, 1000, (1, 8))
+print(model.generate(ids, max_new_tokens=5, do_sample=False).shape)   # generate() fills and reuses the KV cache
+# Trained weights: AutoModelForCausalLM.from_pretrained("meta-llama/Llama-3.2-1B"), after you accept the license on Hugging Face
+</code></pre></details>
+
+
+
+<h4 id="moe"><span class="num"></span>Mixture of experts <span class="lvl l4">Expert</span></h4>
+<p>A dense transformer runs each token through all of its weights. A <i>mixture-of-experts</i> (MoE) layer replaces the feed-forward network (<a class="ref" href="#transformer"></a>) with $E$ separate networks, the <i>experts</i>, plus a <i>router</i> that sends each token to a few of them. The router is a linear layer followed by softmax (<a class="ref" href="#softmax"></a>). The layer keeps the top $k$ experts and mixes their outputs by the router weights, renormalized over the chosen ones:</p>
+$$\mathbf p = \operatorname{softmax}(W_r\mathbf x), \qquad \mathcal T = \operatorname{top}_k(\mathbf p), \qquad \mathbf y = \sum_{i\in\mathcal T}\frac{p_i}{\sum_{j\in\mathcal T}p_j}\,E_i(\mathbf x)$$
+<p>The layer stores the weights of all $E$ experts but runs $k$ of them per token. Mixtral 8x7B (2024) has 8 experts per layer and picks $k = 2$. It stores 47 billion parameters and uses 13 billion per token, so it runs at the cost of a 13-billion-parameter dense model. The attention layers stay shared.</p>
+<p>Routing can collapse. The router finds that a few experts work, sends them more tokens, they improve, and the other experts starve. Switch Transformer (Fedus and others, 2021), which routes each token to one expert, adds a load-balancing loss over a batch of $T$ tokens:</p>
+$$L_{\text{aux}} = \alpha\,E\sum_{i=1}^{E} f_i\,P_i, \qquad f_i = \frac{\#\{\text{tokens sent to } i\}}{T}, \qquad P_i = \frac1T\sum_{\text{tokens}} p_i$$
+<p>It reaches its minimum, $\alpha$, when each expert gets the same share of the tokens and of the router probability. Each expert also has a <i>capacity</i> of $\text{capacity factor}\times kT/E$ tokens per batch, so the work fits fixed-size buffers on the GPU. Tokens beyond it skip that layer and pass through on the residual connection. DeepSeek-V3 (2024) keeps the extra loss tiny and balances with a bias: it adds a bias to each expert's score when choosing the top $k$, raises the bias of underloaded experts after each step and lowers the bias of overloaded ones.</p>
+<p class="an"><b>Analogy.</b> A hospital with eight specialists and a triage nurse. The nurse (the router) reads each patient's symptoms and sends them to two specialists. The hospital pays all eight (stored parameters), but each patient sees two (active parameters). If the nurse sends all the patients to the cardiologist, a queue forms there while the others sit idle; load balancing keeps the queues even.</p>
+<div class="viz" data-viz="moe"><p class="cap">Left: tokens in a 2D embedding space, colored by their first-choice expert. The arrows are the router's weight vectors, and a token's score for an expert is its dot product with that arrow. Right: tokens per expert against the capacity line. Drag the arrows to change the routing, or press Balance to run DeepSeek-style bias updates and watch the loads even out.</p></div>
+<details class="code"><summary>From scratch <span>Python · NumPy</span></summary><pre><code>import numpy as np
+
+rng = np.random.default_rng(0)
+T, d, E, k, ff = 64, 16, 8, 2, 32                # tokens, width, experts, experts per token, expert FFN width
+x = rng.normal(size=(T, d))
+Wr = rng.normal(0, 0.5, (d, E))                  # router
+experts = [(rng.normal(0, d ** -0.5, (d, ff)), rng.normal(0, ff ** -0.5, (ff, d))) for _ in range(E)]
+
+logits = x @ Wr
+p = np.exp(logits - logits.max(1, keepdims=True))
+p /= p.sum(1, keepdims=True)                                          # router probabilities
+top = np.argsort(-p, axis=1)[:, :k]                                   # the k best experts per token
+gate = np.take_along_axis(p, top, 1)
+gate /= gate.sum(1, keepdims=True)                                    # renormalize over the chosen k
+
+y = np.zeros_like(x)
+for t in range(T):
+    for i, weight in zip(top[t], gate[t]):
+        W1, W2 = experts[i]
+        y[t] += weight * np.maximum(0, x[t] @ W1) @ W2                # only k of the E experts run for this token
+
+load = np.bincount(top.ravel(), minlength=E)
+f, P = load / (T * k), p.mean(0)                                      # share of assignments, mean probability
+capacity = int(1.25 * T * k / E)                                      # capacity factor 1.25
+print("tokens per expert:", load, "| capacity", capacity, "| dropped", np.maximum(0, load - capacity).sum())
+print(f"balance loss E·Σ f·P = {E * (f * P).sum():.3f} (1.000 when uniform)")
+</code></pre></details>
+<details class="code"><summary>Ready to use <span>Python · Hugging Face transformers</span></summary><pre><code>import torch
+from transformers import MixtralConfig, MixtralForCausalLM
+
+config = MixtralConfig(vocab_size=1000, hidden_size=128, intermediate_size=256, num_hidden_layers=2,
+                       num_attention_heads=4, num_key_value_heads=2, num_local_experts=8, num_experts_per_tok=2,
+                       output_router_logits=True, router_aux_loss_coef=0.01)
+model = MixtralForCausalLM(config)               # random weights; trained model: "mistralai/Mixtral-8x7B-v0.1"
+ids = torch.randint(0, 1000, (2, 16))
+out = model(ids, labels=ids)
+print(out.loss.item(), out.aux_loss.item())      # next-token loss (balance term included); balance loss, 2.0 = k when uniform
+total = sum(p.numel() for p in model.parameters())
+in_experts = sum(p.numel() for n, p in model.named_parameters() if "experts" in n)
+print(f"{total:,} stored; about {total - in_experts + in_experts * 2 // 8:,} used per token")
+</code></pre></details>
+
+
+
+<h4 id="mamba"><span class="num"></span>State space models and Mamba <span class="lvl l4">Expert</span></h4>
+<p>Attention compares each token with each other token, so its compute grows with $n^2$ and its KV cache with $n$. An RNN (<a class="ref" href="#rnn"></a>) carries a fixed-size state but trains one step at a time. A <i>state space model</i> (SSM) offers both: it trains in parallel like a CNN and generates like an RNN with constant memory. A linear SSM maps an input sequence $x_t$ to outputs $y_t$ through a state $\mathbf h_t \in \mathbb R^N$:</p>
+$$\mathbf h_t = \bar A\,\mathbf h_{t-1} + \bar B\,x_t, \qquad y_t = C\,\mathbf h_t$$
+<p>$\bar A$ and $\bar B$ come from a continuous system $\mathbf h'(s) = A\mathbf h(s) + Bx(s)$ sampled with step $\Delta$: $\bar A = e^{\Delta A}$ and $\bar B \approx \Delta B$. The recurrence has no nonlinearity, so you can unroll it, $\mathbf h_t = \sum_{j\ge0}\bar A^j\bar B\,x_{t-j}$, and the output becomes a convolution:</p>
+$$y_t = \sum_{j=0}^{t} K_j\,x_{t-j}, \qquad K = \big(C\bar B,\ C\bar A\bar B,\ C\bar A^2\bar B,\ \dots\big)$$
+<p>$K$ is a causal convolution kernel (<a class="ref" href="#wavenet"></a>) as long as the sequence. During training you compute all outputs at once (S4 uses the FFT); during generation you run the recurrence, one cheap step per token. With a diagonal $A$, each state coordinate is a leaky memory that fades at its own rate, and $\Delta$ sets how long it lasts.</p>
+<p>A fixed kernel treats each input the same way, so it can't decide to skip filler words or hold on to a name. Mamba (Gu and Dao, 2023) makes $\Delta$, $B$ and $C$ depend on the current input, for example $\Delta_t = \operatorname{softplus}(\mathbf w^\top\mathbf x_t + b)$. A large $\Delta_t$ overwrites the state with the current input; a small one keeps the state and ignores the input, like an LSTM's forget gate (<a class="ref" href="#lstm"></a>). The convolution view no longer holds, so Mamba computes the recurrence with a parallel <i>scan</i> that keeps the state in fast on-chip memory, and its cost grows in proportion to $n$. Gu and Dao report that a 3-billion-parameter Mamba beats transformers of the same size on language modeling. Hybrids such as Jamba mix Mamba layers with a few attention layers.</p>
+<p class="an"><b>Analogy.</b> Attention keeps a full transcript of the meeting and rereads it for each new question. An SSM keeps a one-page notebook and updates it after each sentence. A fixed SSM updates the page the same way whatever anyone says; Mamba's note-taker decides, sentence by sentence, whether to rewrite the page or skip the sentence.</p>
+<div class="viz" data-viz="mamba"><p class="cap">A one-state SSM ($A = -1$, $B = C = 1$, exact zero-order-hold sampling). Top: an input with three marked tokens among filler noise. Middle: the fixed SSM's output from the recurrence (line) and from the convolution (dots), which agree; in red, a selective SSM whose $\Delta_t$ is large on the marked tokens and tiny elsewhere, as a trained Mamba layer could learn. Bottom: the kernel $K$. Change $\Delta$ to trade memory length against noise.</p></div>
+<details class="code"><summary>From scratch <span>Python · NumPy</span></summary><pre><code>import numpy as np
+
+rng = np.random.default_rng(0)
+N, T = 4, 200
+A = -np.array([0.05, 0.2, 0.8, 2.0])             # diagonal A: four memories that fade at different rates
+B, C = rng.normal(size=N), rng.normal(size=N)
+x = rng.normal(size=T)
+
+def discretize(delta):
+    return np.exp(delta * A), delta * B          # Ā = e^{ΔA}, B̄ ≈ ΔB
+
+Ab, Bb = discretize(0.5)
+h, y_rec = np.zeros(N), []
+for xt in x:                                     # recurrent view: a fixed-size state, one step per token
+    h = Ab * h + Bb * xt
+    y_rec.append(C @ h)
+K = np.array([C @ (Ab ** j * Bb) for j in range(T)])   # kernel K_j = C Ā^j B̄
+y_conv = np.convolve(x, K)[:T]                         # convolutional view: all positions at once
+print("recurrence == convolution:", np.allclose(y_rec, y_conv))
+
+# Selective SSM (Mamba): Δ depends on the input, so each step decides to keep or overwrite the state.
+w, b = 2.0, -1.0
+h, y_sel = np.zeros(N), []
+for xt in x:
+    Ab, Bb = discretize(np.log1p(np.exp(w * xt + b)))   # Δ_t = softplus(w x_t + b)
+    h = Ab * h + Bb * xt
+    y_sel.append(C @ h)
+print(np.round(y_sel[:6], 3))                            # no fixed kernel K produces this output
+</code></pre></details>
+<details class="code"><summary>Ready to use <span>Python · Hugging Face transformers</span></summary><pre><code>import torch
+from transformers import MambaConfig, MambaForCausalLM
+
+config = MambaConfig(vocab_size=1000, hidden_size=128, state_size=16, num_hidden_layers=4)
+model = MambaForCausalLM(config)                 # random weights; trained: "state-spaces/mamba-130m-hf"
+print(model.backbone.layers[0].mixer)            # x_proj makes Δ, B and C from each token: the selective part
+ids = torch.randint(0, 1000, (1, 32))
+out = model(ids, labels=ids)
+print(out.loss.item(), sum(p.numel() for p in model.parameters()) / 1e6, "M parameters")
+print(model.generate(ids, max_new_tokens=8, do_sample=False).shape)   # carries a fixed-size state, no KV cache
+# On a GPU, pip install mamba-ssm causal-conv1d for the fast scan kernels
+</code></pre></details>
+
+
+
+<h4 id="llava"><span class="num"></span>Vision-language models: LLaVA <span class="lvl l4">Expert</span></h4>
+<p>A vision-language model answers questions about images. LLaVA (Liu and others, 2023) builds one from parts you have met: a pretrained CLIP image encoder (<a class="ref" href="#contrastive"></a>), which is a ViT (<a class="ref" href="#vit"></a>), and a pretrained decoder-only language model (<a class="ref" href="#llama"></a>). A small <i>projector</i> connects them. The ViT turns the image into one vector per patch, the projector (a two-layer MLP in LLaVA-1.5) maps each vector into the language model's embedding space, and the language model reads the results as tokens placed before the text:</p>
+$$Z = \operatorname{ViT}(\text{image}) \in \mathbb R^{N\times d_v}, \qquad H_v = \operatorname{MLP}(Z) \in \mathbb R^{N\times d}, \qquad \text{input} = \big[H_v;\ \operatorname{Embed}(\text{text})\big]$$
+<p>In LLaVA-1.5, a 336 × 336 image cut into 14 × 14 patches gives $N = 24^2 = 576$ image tokens of width $d_v = 1{,}024$, and the projector maps them to the language model's $d = 4{,}096$. Training has two stages. First you freeze both pretrained models and train the projector alone on image-caption pairs, so image tokens land where the language model expects words. Then you unfreeze the language model and fine-tune it with the projector on visual instruction data: images paired with questions and answers.</p>
+<p>Image tokens use up context. Small text needs high resolution, so later models split a large image into tiles and encode each one. LLaVA-NeXT uses up to four 336 × 336 tiles plus a downscaled overview, 2,880 tokens. Qwen2-VL merges each 2 × 2 group of neighboring patches into one token, which cuts the count by four.</p>
+<p class="an"><b>Analogy.</b> An interpreter between two experts who don't share a language. The photographer (the vision encoder) describes the picture in their own vocabulary, the interpreter (the projector) translates each description into the writer's language, and the writer (the language model) answers questions as if it had read a text about the picture. Training first teaches the interpreter alone, then lets the writer adapt.</p>
+<div class="viz" data-viz="llava"><p class="cap">The grid on the image shows the ViT's patches. Change the resolution and the patch size, merge 2 × 2 patches, or switch to tiles, and watch how much of the context window the image takes before the question starts.</p></div>
+<details class="code"><summary>From scratch <span>Python · PyTorch</span></summary><pre><code>import torch
+from torch import nn
+
+d_v, d, vocab = 64, 128, 1000
+vision = nn.Sequential(nn.Conv2d(3, d_v, 14, stride=14), nn.Flatten(2))   # patch embedding; a real ViT adds attention layers
+projector = nn.Sequential(nn.Linear(d_v, d), nn.GELU(), nn.Linear(d, d))  # LLaVA-1.5's two-layer MLP
+embed = nn.Embedding(vocab, d)
+lm = nn.TransformerEncoder(nn.TransformerEncoderLayer(d, 4, 4 * d, batch_first=True, norm_first=True), 2)
+head = nn.Linear(d, vocab)
+
+def forward(image, text_ids):
+    z = vision(image).transpose(1, 2)                         # (batch, N patches, d_v)
+    seq = torch.cat([projector(z), embed(text_ids)], dim=1)   # image tokens first, then the text tokens
+    mask = nn.Transformer.generate_square_subsequent_mask(seq.shape[1])
+    return head(lm(seq, mask=mask, is_causal=True))           # next-token scores at each position
+
+image, text = torch.randn(1, 3, 336, 336), torch.randint(0, vocab, (1, 20))
+print(forward(image, text).shape)                             # (1, 576 + 20, 1000): 24² = 576 image tokens
+for part in (vision, embed, lm, head):                        # stage 1: train the projector alone
+    part.requires_grad_(False)
+print(sum(p.numel() for p in projector.parameters() if p.requires_grad), "trainable parameters in stage 1")
+</code></pre></details>
+<details class="code"><summary>Ready to use <span>Python · Hugging Face transformers</span></summary><pre><code>import torch
+from transformers import CLIPVisionConfig, LlamaConfig, LlavaConfig, LlavaForConditionalGeneration
+
+config = LlavaConfig(
+    vision_config=CLIPVisionConfig(image_size=336, patch_size=14, hidden_size=64, intermediate_size=128,
+                                   num_hidden_layers=2, num_attention_heads=4),
+    text_config=LlamaConfig(vocab_size=1000, hidden_size=128, intermediate_size=256, num_hidden_layers=2,
+                            num_attention_heads=4),
+    image_token_id=999)
+model = LlavaForConditionalGeneration(config)    # a tiny random LLaVA; the real one is "llava-hf/llava-1.5-7b-hf" (about 14 GB)
+print(model.model.multi_modal_projector)         # Linear, GELU, Linear
+n_img = (336 // 14) ** 2                         # 576 placeholder tokens, one per patch
+ids = torch.cat([torch.full((1, n_img), 999), torch.randint(0, 998, (1, 12))], dim=1)
+out = model(input_ids=ids, pixel_values=torch.randn(1, 3, 336, 336))
+print(out.logits.shape)                          # (1, 588, 1000)
+</code></pre></details>
+
+
+
+<div class="quiz"><p><b>Check yourself.</b> Answer each question before you open it.</p>
+<details><summary>What is the receptive field of 10 causal convolution layers with kernel size 2 and dilations 1, 2, 4, …, 512?</summary><p>$1 + (1 + 2 + \dots + 512) = 1{,}024$ steps.</p></details>
+<details><summary>Which mask does a decoder-only model use, and how does a prefix LM differ?</summary><p>A causal mask over the whole sequence. A prefix LM lets the prompt tokens see each other in both directions and keeps the causal mask after the prompt.</p></details>
+<details><summary>How much smaller is Llama 3 8B's KV cache with $g = 8$ key-value heads than it would be with $g = 32$?</summary><p>Four times smaller, since the cache grows in proportion to $g$: 128 KiB per token instead of 512 KiB.</p></details>
+<details><summary>Mixtral 8x7B stores 47 billion parameters. Why does it run at the cost of a 13-billion-parameter model?</summary><p>Each token passes through 2 of the 8 experts in each layer, and all tokens share the attention layers, so about 13 billion parameters do work for each token.</p></details>
+<details><summary>Why can a linear state space model train like a CNN and generate like an RNN?</summary><p>Its recurrence unrolls into a convolution with kernel $K_j = C\bar A^j\bar B$, which you compute for all positions at once in training. To generate, you run the recurrence with a fixed-size state.</p></details>
+</div>
+
+<h3 id="build-arch">Projects to build</h3>
+<ul class="build">
+<li><b><a href="https://github.com/rasbt/LLMs-from-scratch" target="_blank" rel="noopener">rasbt/LLMs-from-scratch</a></b>: the code of Sebastian Raschka's book <i>Build a Large Language Model (From Scratch)</i>. <i>Project:</i> build the GPT model of chapter 4 (<code>ch04/01_main-chapter-code/gpt.py</code>), then follow <code>ch05/07_gpt_to_llama</code>: <code>converting-gpt-to-llama2.ipynb</code> swaps LayerNorm for RMSNorm, GELU for SwiGLU and learned positions for RoPE, and <code>converting-llama2-to-llama3.ipynb</code> adds grouped-query attention. Compute the KV cache of each version with the formula in <a class="ref" href="#llama"></a>. <i>Practices</i> <a class="ref" href="#transformer"></a>, <a class="ref" href="#llama"></a>, <a class="ref" href="#posenc"></a>.</li>
+<li><b><a href="https://github.com/labmlai/annotated_deep_learning_paper_implementations" target="_blank" rel="noopener">labmlai/annotated_deep_learning_paper_implementations</a></b>: PyTorch implementations of many papers, with notes beside the code. <i>Project:</i> train the ResNet on CIFAR-10 (<code>labml_nn/resnet/experiment.py</code>), the U-Net on the Carvana car masks (<code>labml_nn/unet/experiment.py</code>) and the Switch Transformer on tiny Shakespeare (<code>labml_nn/transformers/switch/experiment.py</code>). In the Switch run, set <code>load_balancing_loss_ceof</code> (the repo's spelling) to 0 and compare the logged <code>route.max</code> and <code>route.min</code> with a default run. <i>Practices</i> <a class="ref" href="#resnet"></a>, <a class="ref" href="#unet"></a>, <a class="ref" href="#moe"></a>.</li>
+</ul>
+
+<h2 id="appendix" data-layer="Reference">Appendix</h2>
 
 <h3 id="notation">Notation</h3>
 <div class="tablewrap"><table>
@@ -4474,6 +5577,7 @@ print("block CV ", round(score(GroupKFold(5), groups=groups), 3))               
 <li>First models: <a class="ref" href="#metrics"></a>, <a class="ref" href="#linreg"></a>, <a class="ref" href="#knn"></a>, <a class="ref" href="#logreg"></a>, <a class="ref" href="#ridge"></a>, <a class="ref" href="#biasvar"></a>.</li>
 <li>Trees and unsupervised learning: <a class="ref" href="#tree"></a>, <a class="ref" href="#forest"></a>, <a class="ref" href="#gboost"></a>, <a class="ref" href="#xgboost"></a>, <a class="ref" href="#kmeans"></a>, <a class="ref" href="#pca"></a>.</li>
 <li>Neural networks: <a class="ref" href="#perceptron"></a>, <a class="ref" href="#activations"></a>, <a class="ref" href="#mlp"></a>, <a class="ref" href="#losses"></a>, <a class="ref" href="#backprop"></a>, <a class="ref" href="#dropout"></a>, <a class="ref" href="#init"></a>, <a class="ref" href="#optimizers"></a>, <a class="ref" href="#batchnorm"></a>, <a class="ref" href="#residual"></a>.</li>
+<li>Architectures: <a class="ref" href="#lenet"></a>, <a class="ref" href="#resnet"></a>, <a class="ref" href="#unet"></a>, <a class="ref" href="#encdec"></a>, <a class="ref" href="#llama"></a>.</li>
 <li>Specialty: <a href="#part-cv">computer vision</a>, <a href="#part-nlp">natural language processing</a>, <a href="#part-gen">generative models</a>, <a href="#part-rl">reinforcement learning</a> or <a href="#part-geo">geospatial analysis</a>.</li>
 </ol>
 
@@ -4487,7 +5591,8 @@ print("block CV ", round(score(GroupKFold(5), groups=groups), 3))               
 <li>S. J. D. Prince. <i>Understanding Deep Learning</i>. MIT Press, 2023. Free online.</li>
 <li>R. Szeliski. <i>Computer Vision: Algorithms and Applications</i>, 2nd ed. Springer, 2022. Free online.</li>
 <li>R. S. Sutton, A. G. Barto. <i>Reinforcement Learning: An Introduction</i>, 2nd ed. MIT Press, 2018. Free online.</li>
-<li>Original papers worth reading: Chen and Guestrin, "XGBoost" (2016); Vaswani et al., "Attention Is All You Need" (2017); He et al., "Deep Residual Learning" (2015); Kingma and Ba, "Adam" (2014); Ho et al., "Denoising Diffusion Probabilistic Models" (2020); Schulman et al., "Proximal Policy Optimization" (2017); Rafailov et al., "Direct Preference Optimization" (2023).</li>
+<li>Original papers worth reading: Chen and Guestrin, "XGBoost" (2016); Vaswani et al., "Attention Is All You Need" (2017); He et al., "Deep Residual Learning" (2015); Kingma and Ba, "Adam" (2014); Ho et al., "Denoising Diffusion Probabilistic Models" (2020); Schulman et al., "Proximal Policy Optimization" (2017); Rafailov et al., "Direct Preference Optimization" (2023); Brin and Page, "The Anatomy of a Large-Scale Hypertextual Web Search Engine" (1998); Hoffmann et al., "Training Compute-Optimal Large Language Models" (2022); Lipman et al., "Flow Matching for Generative Modeling" (2022).</li>
+<li>Architecture papers: LeCun et al., "Gradient-Based Learning Applied to Document Recognition" (1998); Simonyan and Zisserman, "Very Deep Convolutional Networks for Large-Scale Image Recognition" (2014); Ronneberger et al., "U-Net" (2015); Redmon et al., "You Only Look Once" (2016); van den Oord et al., "WaveNet" (2016); Fedus et al., "Switch Transformers" (2021); Touvron et al., "LLaMA" (2023); Gu and Dao, "Mamba" (2023); Liu et al., "Visual Instruction Tuning" (2023).</li>
 </ul>
 
 <footer class="byline"><hr>Built by <a href="https://github.com/Dararoth-ML">Eng Dararoth</a>. Source on <a href="https://github.com/Dararoth-ML/ml-math">GitHub</a>.</footer>
@@ -4496,7 +5601,6 @@ print("block CV ", round(score(GroupKFold(5), groups=groups), 3))               
 <script src="katex/katex.min.js"></script>
 <script src="katex/auto-render.min.js"></script>
 <script>
-  renderMathInElement(document.body, { delimiters: [{ left: '$$', right: '$$', display: true }, { left: '$', right: '$', display: false }], throwOnError: false });
   // Number chapters and topics in page order, then fill in the cross-references.
   const num = {}; let ch = 0, k = 0;
   document.querySelectorAll('main h3, main h4').forEach(h => {
@@ -4505,13 +5609,58 @@ print("block CV ", round(score(GroupKFold(5), groups=groups), 3))               
     else { k++; num[h.id] = ch + '.' + k; n.textContent = num[h.id]; }
   });
   document.querySelectorAll('a.ref').forEach(a => (a.textContent = num[a.hash.slice(1)] || '?'));
-  const toc = document.getElementById('toc');
+  // One page per part: each <h2> and everything up to the next one goes into a <section>. The header joins Part I.
+  const main = document.querySelector('main'), footer = main.querySelector('footer'), pages = [];
+  [...main.childNodes].forEach(n => {                  // childNodes: display math sits in bare text nodes
+    if (n === footer) return;
+    if (!pages.length || (n.tagName === 'H2' && pages[pages.length - 1].querySelector('h2'))) pages.push(document.createElement('section'));
+    pages[pages.length - 1].append(n);
+  });
+  pages.forEach((p, i) => {
+    const h = j => pages[j] && pages[j].querySelector('h2'), nav = document.createElement('nav');
+    nav.className = 'pn';
+    nav.innerHTML = (h(i - 1) ? `<a href="#${h(i - 1).id}">← ${h(i - 1).textContent}</a>` : '<span></span>') + (h(i + 1) ? `<a href="#${h(i + 1).id}">${h(i + 1).textContent} →</a>` : '');
+    p.append(nav);
+    main.insertBefore(p, footer);
+  });
+  // Contents: every part, plus the chapters and topics of the part that is open.
+  const toc = document.getElementById('toc'), subs = [];
   if (matchMedia('(max-width: 920px)').matches) toc.parentNode.open = false;
   document.querySelectorAll('main h2[id], main h3[id], main h4[id]').forEach(h => {
     const a = document.createElement('a');
     a.href = '#' + h.id; a.className = 't-' + h.tagName.toLowerCase(); a.innerHTML = h.innerHTML;
-    toc.appendChild(a);
+    if (h.tagName !== 'H2') return subs[subs.length - 1].append(a);
+    if (h.dataset.layer) toc.append(Object.assign(document.createElement('div'), { className: 't-layer', textContent: h.dataset.layer }));
+    toc.append(a);
+    subs.push(toc.appendChild(document.createElement('div')));
   });
+  // Show one part at a time. KaTeX renders a part the first time it opens; find-in-page still searches the hidden ones.
+  const math = { delimiters: [{ left: '$$', right: '$$', display: true }, { left: '$', right: '$', display: false }], throwOnError: false };
+  const show = p => {
+    pages.forEach((q, i) => { q === p ? q.removeAttribute('hidden') : q.setAttribute('hidden', 'until-found'); subs[i].hidden = q !== p; });
+    if (!p.math) { p.math = true; renderMathInElement(p, math); }
+  };
+  pages.forEach(p => p.addEventListener('beforematch', () => show(p)));
+  const route = () => {
+    const t = document.getElementById(decodeURIComponent(location.hash.slice(1))), p = (t && pages.find(q => q.contains(t))) || pages[0];
+    if (!p.math || p.hasAttribute('hidden')) { show(p); t ? t.scrollIntoView({ behavior: 'instant' }) : scrollTo({ top: 0, behavior: 'instant' }); }
+  };
+  history.scrollRestoration = 'manual';
+  addEventListener('hashchange', route);
+  route();
+  // Remember the last topic read, and offer to continue there on the next visit.
+  let last = null;
+  try { last = localStorage.getItem('ml-math-last'); } catch (e) {}
+  const resume = document.getElementById('resume');
+  if (last && num[last] && !location.hash) { resume.href = '#' + last; resume.innerHTML = 'Continue at ' + document.getElementById(last).innerHTML; resume.hidden = false; }
+  const spy = new IntersectionObserver(es => es.forEach(e => {
+    if (!e.isIntersecting) return;
+    toc.querySelectorAll('a.cur').forEach(a => a.classList.remove('cur'));
+    const a = toc.querySelector(`a[href="#${e.target.id}"]`);
+    if (a) a.classList.add('cur');
+    try { localStorage.setItem('ml-math-last', e.target.id); } catch (err) {}
+  }), { rootMargin: '0px 0px -75% 0px' });
+  document.querySelectorAll('main h4[id]').forEach(h => spy.observe(h));
   // Copy button for each code block (shown when the block is open).
   document.querySelectorAll('details.code').forEach(d => {
     const b = document.createElement('button');

@@ -3065,3 +3065,656 @@ V.spatialcv = box => {
     o.innerHTML = `RMSE estimates: random CV = <b>${f2(eR)}</b>, block CV = <b>${f2(eB)}</b> &nbsp; real error in the new region = <b>${f2(eT)}</b>`;
   };
 };
+
+/* ---------- Part X: architectures ---------- */
+// Link to a topic by id, with the section number the page assigned to it.
+const topicRef = id => { const n = document.querySelector('#' + id + ' .num'); return `<a class="ref" href="#${id}">${n ? n.textContent : '?'}</a>`; };
+const andList = a => (a.length < 2 ? a.join('') : a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1]);
+
+V.archmap = box => {
+  const ALG = [['conv', 'convolution'], ['convshape', 'pooling and stride'], ['batchnorm', 'normalization'], ['residual', 'residual connections'], ['mlp', 'dense (MLP) layers'], ['rnn', 'recurrence'], ['lstm', 'gating'], ['attention', 'attention'], ['posenc', 'positional encoding'], ['contrastive', 'contrastive loss'], ['gnn', 'message passing']];
+  const ARCH = [
+    ['LSTM', 1997, 'lstm', 'rnn lstm'], ['LeNet-5', 1998, 'lenet', 'conv convshape mlp'], ['VGG-16', 2014, 'lenet', 'conv convshape mlp'],
+    ['seq2seq + attention', 2014, 'seq2seq', 'rnn lstm attention'], ['ResNet', 2015, 'resnet', 'conv convshape batchnorm residual'],
+    ['U-Net', 2015, 'unet', 'conv convshape'], ['YOLO', 2016, 'yolo', 'conv convshape batchnorm mlp'], ['WaveNet', 2016, 'wavenet', 'conv lstm residual'],
+    ['Transformer', 2017, 'encdec', 'attention posenc residual batchnorm mlp'], ['GCN', 2017, 'gnn', 'gnn mlp'],
+    ['GPT', 2018, 'transformer', 'attention posenc residual batchnorm mlp'], ['BERT', 2018, 'bert', 'attention posenc residual batchnorm mlp'],
+    ['ViT', 2020, 'vit', 'conv attention posenc residual batchnorm mlp'], ['CLIP', 2021, 'contrastive', 'attention contrastive residual batchnorm mlp'],
+    ['Switch (MoE)', 2021, 'moe', 'attention residual batchnorm mlp'], ['Llama', 2023, 'llama', 'attention posenc residual batchnorm mlp lstm'],
+    ['Mamba', 2023, 'mamba', 'rnn lstm conv residual batchnorm'], ['LLaVA', 2023, 'llava', 'attention contrastive posenc residual batchnorm mlp'],
+  ].map(([n, y, id, a]) => ({ n, y, id, a: a.split(' ') }));
+  const c = canvas(box, 600, 440), { ctx } = c;
+  const yr = slider(row(box), 'show architectures up to the year', 1997, 2023, 1, 2023);
+  const o = out(box);
+  const yA = i => 24 + i * 396 / (ALG.length - 1), yR = j => 24 + j * 396 / (ARCH.length - 1);
+  let sel = ['arch', 8];
+  c.cv.addEventListener('click', e => {
+    const b = c.cv.getBoundingClientRect(), x = (e.clientX - b.left) * 600 / b.width, y = (e.clientY - b.top) * 440 / b.height;
+    const near = (n, f) => range(n).reduce((a, i) => (Math.abs(f(i) - y) < Math.abs(f(a) - y) ? i : a), 0);
+    sel = x < 300 ? ['alg', near(ALG.length, yA)] : ['arch', near(ARCH.length, yR)];
+    closestBox(c.cv).draw();
+  });
+  return () => {
+    const on = j => ARCH[j].y <= yr.v, alg = sel[0] === 'alg' ? ALG[sel[1]][0] : null, hotA = new Set(), hotR = new Set(), hc = alg ? C.orange : C.blue;
+    if (alg) { hotA.add(alg); ARCH.forEach((r, j) => on(j) && r.a.includes(alg) && hotR.add(j)); }
+    else if (on(sel[1])) { hotR.add(sel[1]); ARCH[sel[1]].a.forEach(a => hotA.add(a)); }
+    ctx.clearRect(0, 0, 600, 440);
+    const edge = (i, j, hot) => { ctx.strokeStyle = hot ? hc : '#e4e4e4'; ctx.lineWidth = hot ? 2 : 1; ctx.beginPath(); ctx.moveTo(172, yA(i)); ctx.bezierCurveTo(290, yA(i), 290, yR(j), 408, yR(j)); ctx.stroke(); };
+    [false, true].forEach(pass => ARCH.forEach((r, j) => on(j) && r.a.forEach(a => { const hot = hotR.has(j) && hotA.has(a); if (hot === pass) edge(ALG.findIndex(q => q[0] === a), j, hot); })));
+    const node = (x, y, col) => { ctx.fillStyle = col; ctx.beginPath(); ctx.arc(x, y, 4, 0, 7); ctx.fill(); };
+    ctx.font = '14px Times New Roman';
+    ALG.forEach(([id, t], i) => { const hot = hotA.has(id); node(172, yA(i), hot ? hc : '#bbb'); ctx.fillStyle = hot ? C.ink : C.gray; ctx.textAlign = 'right'; ctx.fillText(t, 164, yA(i) + 5); });
+    ARCH.forEach((r, j) => {
+      const hot = hotR.has(j);
+      node(408, yR(j), !on(j) ? '#eee' : hot ? hc : '#bbb');
+      ctx.textAlign = 'left'; ctx.fillStyle = !on(j) ? '#ccc' : hot ? C.ink : C.gray; ctx.fillText(r.n, 416, yR(j) + 5);
+      ctx.font = '12px Times New Roman'; ctx.fillStyle = '#aaa'; ctx.fillText(r.y, 562, yR(j) + 5); ctx.font = '14px Times New Roman';
+    });
+    ctx.font = '12px Times New Roman'; ctx.fillStyle = C.gray; ctx.textAlign = 'right'; ctx.fillText('ALGORITHMS', 164, 10); ctx.textAlign = 'left'; ctx.fillText('ARCHITECTURES', 416, 10); ctx.font = FONT;
+    if (alg) { const names = [...hotR].map(j => ARCH[j].n); o.innerHTML = `<b>${ALG[sel[1]][1]}</b> (${topicRef(alg)}) appears in ${names.length} of the ${ARCH.filter((_, j) => on(j)).length} architectures shown: ${andList(names)}.`; }
+    else { const r = ARCH[sel[1]]; o.innerHTML = on(sel[1]) ? `<b>${r.n}</b> (${r.y}, topic ${topicRef(r.id)}) combines ${andList(r.a.map(a => `${ALG.find(q => q[0] === a)[1]} (${topicRef(a)})`))}.` : `${r.n} appeared in ${r.y}; move the slider to see it.`; }
+  };
+};
+
+V.lenet = box => {
+  const c = canvas(box, 600, 380), { ctx } = c;
+  const r = row(box), net = select(r, 'network', ['LeNet-5', 'VGG-16'], 'VGG-16'), gap = check(r, 'global average pooling in place of the dense layers', false);
+  const o = out(box);
+  let hov = -1, rh = 16;
+  hover(c, (x, y) => (hov = Math.floor((y - 28) / rh)));
+  c.cv.addEventListener('pointerleave', () => { hov = -1; closestBox(c.cv).draw(); });
+  const layers = () => {
+    const le = net.v === 'LeNet-5', K = le ? 5 : 3, L = [];
+    let H = le ? 32 : 224, Ci = le ? 1 : 3;
+    (le ? [6, 'M', 16, 'M'] : [64, 64, 'M', 128, 128, 'M', 256, 256, 256, 'M', 512, 512, 512, 'M', 512, 512, 512, 'M']).forEach(v => {
+      if (v === 'M') { H /= 2; L.push({ t: `max pool → ${H}×${H}×${Ci}`, p: 0, m: 0 }); return; }
+      const Ho = le ? H - K + 1 : H;                                   // LeNet: no padding; VGG: padding 1 keeps the size
+      L.push({ t: `conv ${K}×${K}, ${v} → ${Ho}×${Ho}×${v}`, p: K * K * Ci * v + v, m: Ho * Ho * K * K * Ci * v, pf: `${K}·${K}·${Ci}·${v} + ${v}`, mf: `${Ho}·${Ho}·${K}·${K}·${Ci}·${v}` });
+      H = Ho; Ci = v;
+    });
+    if (gap.v) L.push({ t: `global average pool → ${Ci}`, p: 0, m: 0 });
+    (gap.v ? [[Ci, le ? 10 : 1000]] : le ? [[H * H * Ci, 120], [120, 84], [84, 10]] : [[H * H * Ci, 4096], [4096, 4096], [4096, 1000]])
+      .forEach(([a, b]) => L.push({ t: `dense ${a.toLocaleString()} → ${b.toLocaleString()}`, p: a * b + b, m: a * b, pf: `${a}·${b} + ${b}`, mf: `${a}·${b}`, dense: true }));
+    return L;
+  };
+  return () => {
+    const L = layers(), P = sum(L.map(l => l.p)), M = sum(L.map(l => l.m)), D = L.filter(l => l.dense), Pd = sum(D.map(l => l.p)), Md = sum(D.map(l => l.m));
+    rh = Math.min(30, 344 / L.length);
+    ctx.clearRect(0, 0, 600, 380); ctx.textAlign = 'left';
+    ctx.font = '13px Times New Roman'; ctx.fillStyle = C.gray;
+    ctx.fillText('layer → output shape', 6, 16); ctx.fillText('share of the parameters', 214, 16); ctx.fillText('share of the multiply-adds', 410, 16);
+    ctx.font = `${Math.min(14, rh - 3)}px Times New Roman`;
+    L.forEach((l, i) => {
+      const y = 28 + i * rh;
+      if (i === hov) { ctx.fillStyle = 'rgba(0,0,0,.06)'; ctx.fillRect(0, y, 600, rh); }
+      ctx.fillStyle = l.p ? C.ink : C.gray; ctx.fillText(l.t, 6, y + rh * 0.72);
+      [[l.p / P, 214, 'rgba(31,95,191,.65)'], [l.m / M, 410, 'rgba(212,128,15,.7)']].forEach(([s, x0, col]) => {
+        if (!s) return;
+        const w = Math.max(1.5, 140 * s);
+        ctx.fillStyle = col; ctx.fillRect(x0, y + 2, w, rh - 4);
+        ctx.fillStyle = C.ink; ctx.fillText(pct(s), x0 + w + 4, y + rh * 0.72);
+      });
+    });
+    ctx.font = FONT;
+    const l = L[hov];
+    o.innerHTML = l && l.p ? `${l.t}: ${l.pf} = <b>${l.p.toLocaleString()}</b> parameters; ${l.mf} = <b>${l.m.toLocaleString()}</b> multiply-adds`
+      : `${net.v}: <b>${P.toLocaleString()}</b> parameters (${pct(Pd / P)} in the dense layers) and <b>${big(M)}</b> multiply-adds (${pct(1 - Md / M)} in the conv layers). Hover a row to see its formula.`;
+  };
+};
+
+const RESNET = { 18: [false, [2, 2, 2, 2]], 34: [false, [3, 4, 6, 3]], 50: [true, [3, 4, 6, 3]], 101: [true, [3, 4, 23, 3]], 152: [true, [3, 8, 36, 3]] };
+// The blocks of a torchvision ResNet at 224 × 224: shapes, parameters (BatchNorm included) and multiply-adds.
+function resnetBlocks(depth) {
+  const [bott, reps] = RESNET[depth], e = bott ? 4 : 1, B = [];
+  let cin = 64, H = 56;
+  reps.forEach((n, s) => {
+    const w = 64 << s;
+    for (let i = 0; i < n; i++) {
+      const st = i === 0 && s > 0 ? 2 : 1, Ho = H / st, cout = w * e, proj = st > 1 || cin !== cout;
+      let p = bott ? cin * w + 9 * w * w + w * cout + 4 * w + 2 * cout : 9 * cin * w + 9 * w * w + 4 * w;
+      let m = bott ? H * H * cin * w + Ho * Ho * (9 * w * w + w * cout) : Ho * Ho * (9 * cin * w + 9 * w * w);
+      if (proj) { p += cin * cout + 2 * cout; m += Ho * Ho * cin * cout; }
+      B.push({ s, i, n, cin, cout, H, Ho, st, proj, p, m });
+      cin = cout; H = Ho;
+    }
+  });
+  return B;
+}
+const resnetTotals = depth => { const e = RESNET[depth][0] ? 4 : 1, B = resnetBlocks(depth); return [9536 + sum(B.map(b => b.p)) + 512 * e * 1000 + 1000, 118013952 + sum(B.map(b => b.m)) + 512 * e * 1000]; };
+
+V.resnet = box => {
+  const c = canvas(box, 600, 330), { ctx } = c;
+  const dep = select(row(box), 'depth', ['18', '34', '50', '101', '152'], '50');
+  const o = out(box);
+  let hx = -1, hy = -1;
+  hover(c, (x, y) => { hx = x; hy = y; });
+  c.cv.addEventListener('pointerleave', () => { hx = -1; closestBox(c.cv).draw(); });
+  const CX = [150, 252, 354, 456];
+  const rect = (x, y, w, h, fill, t, sub) => {
+    ctx.fillStyle = fill; ctx.fillRect(x, y, w, h); ctx.strokeStyle = '#999'; ctx.lineWidth = 1; ctx.strokeRect(x, y, w, h);
+    ctx.fillStyle = C.ink; ctx.fillText(t, x + w / 2, y + h / 2 + (sub ? -3 : 5));
+    if (sub) { ctx.fillStyle = C.gray; ctx.fillText(sub, x + w / 2, y + h / 2 + 13); }
+  };
+  return () => {
+    const d = +dep.v, [bott, reps] = RESNET[d], e = bott ? 4 : 1, B = resnetBlocks(d), [P, M] = resnetTotals(d), bh = Math.min(24, 190 / Math.max(...reps));
+    ctx.clearRect(0, 0, 600, 330); ctx.font = '13px Times New Roman'; ctx.textAlign = 'center';
+    rect(8, 110, 82, 60, '#eee', 'stem', '7×7 conv, pool');
+    rect(516, 110, 78, 60, '#eee', 'head', 'pool, dense');
+    let hit = null;
+    B.forEach(b => {
+      const x = CX[b.s] - 40, y = 140 - reps[b.s] * bh / 2 + b.i * bh, on = hx >= x && hx <= x + 80 && hy >= y && hy < y + bh;
+      if (on) hit = b;
+      ctx.fillStyle = on ? 'rgba(212,128,15,.6)' : b.proj ? 'rgba(212,128,15,.25)' : 'rgba(31,95,191,.22)';
+      ctx.fillRect(x, y, 80, bh - 1);
+    });
+    reps.forEach((n, s) => {
+      ctx.fillStyle = C.ink; ctx.fillText(`stage ${s + 1}`, CX[s], 20);
+      ctx.fillStyle = C.gray; ctx.fillText(`${n} block${n > 1 ? 's' : ''}`, CX[s], 36); ctx.fillText(`${56 >> s}×${56 >> s}×${(64 << s) * e}`, CX[s], 256);
+    });
+    [[90, 108], [191, 210], [293, 312], [395, 414], [497, 514]].forEach(([a, b]) => parrow(ctx, a, 140, b, 140, C.gray));
+    const seq = bott ? ['1×1, 64', '3×3, 64', '1×1, 256'] : ['3×3, 64', '3×3, 64'], bx = i => 150 + i * 104, px = bx(seq.length) + 2;
+    ctx.textAlign = 'left'; ctx.fillStyle = C.ink; ctx.fillText(bott ? 'bottleneck block,' : 'basic block,', 8, 298); ctx.fillText('stage 1:', 8, 314);
+    ctx.textAlign = 'center';
+    seq.forEach((t, i) => { rect(bx(i), 292, 86, 24, 'rgba(31,95,191,.12)', t); parrow(ctx, bx(i) - 16, 304, bx(i), 304, C.gray); });
+    parrow(ctx, bx(seq.length) - 18, 304, px - 9, 304, C.gray);
+    ctx.strokeStyle = C.ink; ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(px, 304, 8, 0, 7); ctx.stroke(); ctx.fillStyle = C.ink; ctx.fillText('+', px, 308);
+    ctx.strokeStyle = C.green; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(bx(0) - 22, 304); ctx.lineTo(bx(0) - 22, 280); ctx.lineTo(px, 280); ctx.lineTo(px, 296); ctx.stroke();
+    ctx.fillStyle = C.green; ctx.fillText('shortcut', (bx(0) + px) / 2, 276); ctx.font = FONT;
+    o.innerHTML = hit ? `stage ${hit.s + 1}, block ${hit.i + 1} of ${hit.n}: ${hit.H}×${hit.H}×${hit.cin} → ${hit.Ho}×${hit.Ho}×${hit.cout}${hit.st > 1 ? ', stride 2' : ''}, ${hit.proj ? 'projection' : 'identity'} shortcut; ${hit.p.toLocaleString()} parameters, ${big(hit.m)} multiply-adds`
+      : `ResNet-${d}: 1 + ${sum(reps)} × ${bott ? 3 : 2} + 1 = ${d} weighted layers, <b>${f2(P / 1e6)} M</b> parameters, <b>${f2(M / 1e9)} G</b> multiply-adds per 224 × 224 image (VGG-16: 16 layers, 138.4 M and 15.5 G). Hover a block to see its shapes.`;
+  };
+};
+
+V.unet = box => {
+  const N = 64, IMG = range(N).map(y => range(N).map(x => {
+    let g = 0.12 + 0.25 * x / N;                                                        // background stays below 0.5
+    if ((x - 19) ** 2 + (y - 20) ** 2 < 110) g = 0.85;                                  // a large disk
+    if (x > 8 && x < 27 && y > 42 && y < 56) g = 0.8;                                   // a rectangle
+    if (x > 32 && x < 60 && Math.abs(y - 0.55 * x - 18) < 0.9) g = 0.9;                // a thin line
+    if ([[44, 9], [52, 15], [58, 7], [41, 22]].some(([a, b]) => Math.abs(x - a) <= 1 && Math.abs(y - b) <= 1)) g = 0.9;   // small dots
+    return g;
+  }));
+  const down = G => range(G.length / 2).map(y => range(G.length / 2).map(x => (G[2 * y][2 * x] + G[2 * y + 1][2 * x] + G[2 * y][2 * x + 1] + G[2 * y + 1][2 * x + 1]) / 4));
+  const up = G => range(G.length * 2).map(y => range(G.length * 2).map(x => G[y >> 1][x >> 1]));
+  const PYR = [IMG]; for (let l = 0; l < 4; l++) PYR.push(down(PYR[l]));
+  const DET = range(4).map(l => { const U = up(PYR[l + 1]); return PYR[l].map((rw, y) => rw.map((v, x) => v - U[y][x])); });   // detail lost at each pooling
+  const c = canvas(box, 600, 310), { ctx } = c;
+  const D = slider(row(box), 'depth (number of poolings)', 1, 4, 1, 3);
+  const r2 = row(box), sk = [64, 32, 16, 8].map(s => check(r2, `skip at ${s}×${s}`, true));
+  const o = out(box);
+  const img = (G, x0, y0, s, f) => G.forEach((rw, y) => rw.forEach((v, x) => { ctx.fillStyle = f ? f(v, x, y) : grayStyle(v); ctx.fillRect(x0 + x * s, y0 + y * s, s + 0.4, s + 0.4); }));
+  return () => {
+    const d = D.v;
+    sk.forEach((s, l) => (s.i.disabled = l >= d));
+    let R = PYR[d];
+    for (let l = d - 1; l >= 0; l--) { const U = up(R); R = sk[l].v ? U.map((rw, y) => rw.map((v, x) => v + DET[l][y][x])) : U; }
+    let TP = 0, FP = 0, FN = 0;
+    const cmp = R.map((rw, y) => rw.map((v, x) => { const p = v > 0.5, g = IMG[y][x] > 0.5; p && g ? TP++ : p ? FP++ : g ? FN++ : 0; return p && g ? 1 : p ? 2 : g ? 3 : 0; }));
+    const dice = 2 * TP / (2 * TP + FP + FN);
+    ctx.clearRect(0, 0, 600, 310); ctx.font = '13px Times New Roman'; ctx.textAlign = 'center';
+    const yl = l => 28 + l * 62, node = (x, y, t, on) => { ctx.fillStyle = on ? 'rgba(31,95,191,.15)' : '#f2f2f2'; ctx.fillRect(x - 28, y - 13, 56, 26); ctx.strokeStyle = '#999'; ctx.strokeRect(x - 28, y - 13, 56, 26); ctx.fillStyle = C.ink; ctx.fillText(t, x, y + 5); };
+    const bs = 64 >> d, bw = Math.min(56, bs * 7), yb = yl(d) + 4;
+    for (let l = 0; l < d; l++) {
+      const s = 64 >> l, y = yl(l), live = sk[l].v;
+      ctx.strokeStyle = live ? C.green : '#bbb'; ctx.lineWidth = live ? 2 : 1; ctx.setLineDash(live ? [] : [4, 4]);
+      ctx.beginPath(); ctx.moveTo(68, y); ctx.lineTo(176, y); ctx.stroke(); ctx.setLineDash([]);
+      if (live) parrow(ctx, 160, y, 178, y, C.green, 2);
+      node(40, y, `${s}×${s}`, true); node(206, y, `${s}×${s}`, true);
+      if (l + 1 < d) { parrow(ctx, 40, y + 14, 40, yl(l + 1) - 14, C.gray); parrow(ctx, 206, yl(l + 1) - 14, 206, y + 14, C.gray); }
+      else { parrow(ctx, 40, y + 14, 119 - bw / 2, yb, C.gray); parrow(ctx, 127 + bw / 2, yb, 206, y + 14, C.gray); }
+    }
+    img(PYR[d], 123 - bw / 2, yb - bw / 2, bw / bs); ctx.strokeStyle = '#999'; ctx.lineWidth = 1; ctx.strokeRect(123 - bw / 2, yb - bw / 2, bw, bw);
+    ctx.fillStyle = C.gray; ctx.fillText('encoder', 40, 12); ctx.fillText('decoder', 206, 12); ctx.fillText(`bottom: ${bs}×${bs}`, 123, Math.min(306, yb + bw / 2 + 16));
+    const COLS = ['#f3f3f3', 'rgba(46,139,87,.8)', 'rgba(212,128,15,.7)', 'rgba(192,57,43,.7)'];
+    [['input', 270, IMG], ['decoder output', 382, R], ['mask vs truth', 494, cmp]].forEach(([t, x0, G], i) => { ctx.fillStyle = C.ink; ctx.fillText(t, x0 + 48, 18); img(G, x0, 26, 1.5, i === 2 ? v => COLS[v] : null); });
+    ctx.textAlign = 'left'; ctx.fillStyle = C.ink; ctx.font = FONT; ctx.fillText(`Dice = ${f2(dice)}`, 270, 160);
+    ctx.fillStyle = '#eee'; ctx.fillRect(270, 168, 320, 20); ctx.fillStyle = C.blue; ctx.fillRect(270, 168, 320 * dice, 20);
+    ctx.font = '13px Times New Roman'; ctx.fillStyle = C.gray;
+    ['green: correct, orange: false positive, red: missed', 'Turn off the fine skips: the thin line and the dots go first.'].forEach((t, i) => ctx.fillText(t, 270, 212 + i * 20));
+    ctx.font = FONT;
+    o.innerHTML = `each cell at the bottom of the U summarizes ${2 ** d}×${2 ** d} input pixels; skip connections on: ${andList(range(d).filter(l => sk[l].v).map(l => `${64 >> l}×${64 >> l}`)) || 'none'}; Dice = <b>${f2(dice)}</b>`;
+  };
+};
+
+V.yolo = box => {
+  const OBJ = [['car', 6, 0.27, 0.72, 0.38, 0.24, C.blue], ['person', 14, 0.6, 0.55, 0.12, 0.44, C.red], ['dog', 11, 0.82, 0.8, 0.22, 0.15, C.green], ['bicycle', 1, 0.42, 0.82, 0.16, 0.15, C.purple], ['bird', 2, 0.64, 0.16, 0.07, 0.05, C.orange], ['bird', 2, 0.69, 0.2, 0.07, 0.05, C.orange]];
+  const c = canvas(box, 600, 320), { ctx } = c, Z = 300, X0 = 10, Y0 = 10, PX = 326;
+  const r = row(box), S = slider(r, 'grid S', 2, 15, 1, 7), B = slider(r, 'boxes per cell B', 1, 3, 1, 2);
+  const o = out(box);
+  let ci = 3, cj = 4;
+  c.cv.addEventListener('click', e => {
+    const b = c.cv.getBoundingClientRect(), x = (e.clientX - b.left) * 600 / b.width - X0, y = (e.clientY - b.top) * 320 / b.height - Y0;
+    if (x >= 0 && x < Z && y >= 0 && y < Z) { cj = Math.floor(x / Z * S.v); ci = Math.floor(y / Z * S.v); closestBox(c.cv).draw(); }
+  });
+  const rgba = (h, a) => `rgba(${hexRGB(h).join(',')},${a})`;
+  return () => {
+    const s = S.v, nb = B.v, cell = Z / s, own = {};
+    ci = Math.min(ci, s - 1); cj = Math.min(cj, s - 1);
+    OBJ.forEach(q => { const k = Math.floor(q[3] * s) + ',' + Math.floor(q[2] * s); (own[k] = own[k] || []).push(q); });
+    ctx.clearRect(0, 0, 600, 320);
+    ctx.fillStyle = '#eef3fa'; ctx.fillRect(X0, Y0, Z, Z * 0.6); ctx.fillStyle = '#eef5ea'; ctx.fillRect(X0, Y0 + Z * 0.6, Z, Z * 0.4);
+    Object.entries(own).forEach(([k, qs]) => { const [i, j] = k.split(',').map(Number); ctx.fillStyle = qs.length > 1 ? 'rgba(192,57,43,.4)' : rgba(qs[0][6], 0.25); ctx.fillRect(X0 + j * cell, Y0 + i * cell, cell, cell); });
+    ctx.strokeStyle = 'rgba(0,0,0,.25)'; ctx.lineWidth = 1;
+    for (let k = 0; k <= s; k++) { ctx.beginPath(); ctx.moveTo(X0 + k * cell, Y0); ctx.lineTo(X0 + k * cell, Y0 + Z); ctx.moveTo(X0, Y0 + k * cell); ctx.lineTo(X0 + Z, Y0 + k * cell); ctx.stroke(); }
+    ctx.font = '12px Times New Roman'; ctx.textAlign = 'left';
+    OBJ.forEach(([n, , cx, cy, w, h, col]) => {
+      ctx.strokeStyle = col; ctx.lineWidth = 2; ctx.strokeRect(X0 + (cx - w / 2) * Z, Y0 + (cy - h / 2) * Z, w * Z, h * Z);
+      ctx.fillStyle = col; ctx.beginPath(); ctx.arc(X0 + cx * Z, Y0 + cy * Z, 3.5, 0, 7); ctx.fill();
+      if (n !== 'bird' || cx < 0.66) ctx.fillText(n, X0 + (cx - w / 2) * Z + 2, Y0 + (cy - h / 2) * Z - 4);
+    });
+    ctx.strokeStyle = C.ink; ctx.lineWidth = 2.5; ctx.strokeRect(X0 + cj * cell, Y0 + ci * cell, cell, cell);
+    const qs = own[ci + ',' + cj] || [], q = qs[0], L = 5 * nb + 20;
+    ctx.font = FONT; ctx.fillStyle = C.ink;
+    ctx.fillText(`selected cell: row ${ci + 1}, column ${cj + 1}`, PX, 28);
+    ctx.font = '13px Times New Roman';
+    const lines = range(nb).map(k => (q && k === 0 ? `box 1: x=${f2(+(q[2] * s - cj).toFixed(2))} y=${f2(+(q[3] * s - ci).toFixed(2))} w=${q[4]} h=${q[5]} c=1` : `box ${k + 1}: c=0` + (q ? ' (a second guess, not responsible)' : '')));
+    lines.push(q ? `class: ${q[0]} = 1, the other 19 classes = 0` : 'no object center here: the loss uses c alone');
+    if (qs.length > 1) lines.push(`also centered here: ${qs.slice(1).map(z => z[0]).join(', ')}. YOLOv1 drops it.`);
+    lines.forEach((t, i) => { ctx.fillStyle = qs.length > 1 && i === lines.length - 1 ? C.red : C.ink; ctx.fillText(t, PX, 56 + i * 22); });
+    const sw = Math.min(7, 262 / L), y0 = 80 + lines.length * 22;
+    ctx.fillStyle = C.gray; ctx.fillText(`the cell's ${L} output numbers:`, PX, y0);
+    for (let m = 0; m < L; m++) {
+      const isBox = m < 5 * nb, isC = isBox && m % 5 === 4, val = isBox ? q && m < 5 : q && m - 5 * nb === q[1];
+      ctx.fillStyle = isBox ? rgba(isC ? C.green : C.blue, val ? 0.75 : 0.13) : rgba(C.orange, val ? 0.85 : 0.15);
+      ctx.fillRect(PX + m * sw, y0 + 8, sw - 1, 22);
+    }
+    ctx.fillStyle = C.gray; ctx.fillText(`${nb} × (x, y, w, h, c)`, PX, y0 + 46); ctx.textAlign = 'right'; ctx.fillText('20 classes', PX + L * sw, y0 + 46); ctx.textAlign = 'left';
+    ctx.font = FONT;
+    const clash = Object.values(own).filter(v => v.length > 1).length;
+    o.innerHTML = `output tensor S × S × (5B + C) = ${s} × ${s} × ${L} = <b>${(s * s * L).toLocaleString()}</b> numbers; cells holding two object centers: <b>${clash}</b>. Click a cell to see its target.`;
+  };
+};
+
+V.wavenet = box => {
+  const T = 32, c = canvas(box, 600, 300), { ctx } = c;
+  const r = row(box), L = slider(r, 'layers', 1, 5, 1, 4), K = select(r, 'kernel size', ['2', '3'], '2'), dil = select(r, 'dilation', ['doubling', 'none'], 'doubling');
+  const o = out(box);
+  let sel = T - 1;
+  const X = t => 60 + t * 530 / (T - 1);
+  c.cv.addEventListener('click', e => { const b = c.cv.getBoundingClientRect(), x = (e.clientX - b.left) * 600 / b.width; sel = Math.max(0, Math.min(T - 1, Math.round((x - 60) * (T - 1) / 530))); closestBox(c.cv).draw(); });
+  return () => {
+    const nl = L.v, k = +K.v, ds = range(nl).map(l => (dil.v === 'doubling' ? 2 ** l : 1)), Y = l => 276 - l * 248 / nl;
+    const hot = range(nl + 1).map(() => new Set()); hot[nl].add(sel);
+    for (let l = nl; l > 0; l--) hot[l].forEach(t => { for (let m = 0; m < k; m++) if (t - m * ds[l - 1] >= 0) hot[l - 1].add(t - m * ds[l - 1]); });
+    ctx.clearRect(0, 0, 600, 300);
+    [false, true].forEach(pass => { for (let l = 1; l <= nl; l++) for (let t = 0; t < T; t++) for (let m = 0; m < k; m++) {
+      const u = t - m * ds[l - 1], h = hot[l].has(t);
+      if (u < 0 || h !== pass) continue;
+      ctx.strokeStyle = h ? C.orange : '#e3e3e3'; ctx.lineWidth = h ? 1.8 : 1; ctx.beginPath(); ctx.moveTo(X(t), Y(l)); ctx.lineTo(X(u), Y(l - 1)); ctx.stroke();
+    } });
+    for (let l = 0; l <= nl; l++) for (let t = 0; t < T; t++) { ctx.beginPath(); ctx.arc(X(t), Y(l), l === nl && t === sel ? 6 : 3.5, 0, 7); ctx.fillStyle = hot[l].has(t) ? (l ? C.orange : C.red) : '#cdcdcd'; ctx.fill(); }
+    ctx.font = '12px Times New Roman'; ctx.fillStyle = C.gray; ctx.textAlign = 'left';
+    for (let l = 1; l <= nl; l++) ctx.fillText(`D = ${ds[l - 1]}`, 4, Y(l) + 4);
+    ctx.fillText('input', 4, Y(0) + 4); ctx.textAlign = 'center'; ctx.fillText('time →', 325, 297); ctx.font = FONT;
+    const R = 1 + (k - 1) * sum(ds);
+    o.innerHTML = `receptive field R = 1 + (K − 1)(${ds.join(' + ')}) = <b>${R}</b> steps` + (R > sel + 1 ? ` (the figure starts at t = 0 and shows ${hot[0].size} of them)` : '') + `; weights per channel pair: K · L = ${k * nl}. Click a top node to pick another output.`;
+  };
+};
+
+V.encdec = box => {
+  const SRC = ['the', 'black', 'cat', 'sleeps'], TGT = ['<s>', 'le', 'chat', 'noir', 'dort'], ALL = ['the', 'black', 'cat', 'sleeps', '→', 'le', 'chat', 'noir', 'dort'];
+  const c = canvas(box, 600, 330), { ctx } = c;
+  const arch = select(row(box), 'architecture', ['encoder-decoder (T5)', 'decoder-only (GPT)', 'encoder-only (BERT)', 'prefix LM'], 'encoder-decoder (T5)');
+  const o = out(box);
+  let sel = { m: 1, i: 2 }, mats = [];
+  const specs = () => {
+    const a = arch.v, all = () => true, causal = (i, j) => j <= i;
+    if (a.startsWith('encoder-decoder')) return [{ t: 'encoder self-attention', q: SRC, k: SRC, ok: all, x: 70 }, { t: 'decoder self-attention', q: TGT, k: TGT, ok: causal, x: 250 }, { t: 'cross-attention', q: TGT, k: SRC, ok: all, x: 448 }];
+    if (a.startsWith('decoder')) return [{ t: 'causal self-attention: prompt and answer in one stack', q: ALL, k: ALL, ok: causal, x: 200 }];
+    if (a.startsWith('encoder-only')) return [{ t: 'bidirectional self-attention', q: SRC, k: SRC, ok: all, x: 250 }];
+    return [{ t: 'full attention inside the prompt, causal after it', q: ALL, k: ALL, ok: (i, j) => j <= i || j < 5, x: 200 }];
+  };
+  c.cv.addEventListener('click', e => {
+    const b = c.cv.getBoundingClientRect(), x = (e.clientX - b.left) * 600 / b.width, y = (e.clientY - b.top) * 330 / b.height;
+    mats.forEach((m, mi) => { const i = Math.floor((y - 92) / m.cs); if (x > m.x - 50 && x < m.x + m.k.length * m.cs && i >= 0 && i < m.q.length) sel = { m: mi, i }; });
+    closestBox(c.cv).draw();
+  });
+  return () => {
+    mats = specs(); const cs = mats.length > 1 ? 28 : 24;
+    if (sel.m >= mats.length || sel.i >= mats[sel.m].q.length) sel = { m: mats.length - 1, i: Math.min(2, mats[mats.length - 1].q.length - 1) };
+    const pair = mats.length > 1 && sel.m > 0;                            // decoder rows of self- and cross-attention share a query
+    ctx.clearRect(0, 0, 600, 330);
+    mats.forEach((m, mi) => {
+      m.cs = cs;
+      const hotRow = mi === sel.m || (pair && mi > 0);
+      ctx.font = '13px Times New Roman'; ctx.textAlign = 'center'; ctx.fillStyle = C.ink; ctx.fillText(m.t, m.x + m.k.length * cs / 2, 18);
+      ctx.font = '12px Times New Roman';
+      m.k.forEach((t, j) => { ctx.save(); ctx.translate(m.x + j * cs + cs / 2 + 3, 86); ctx.rotate(-Math.PI / 3); ctx.textAlign = 'left'; ctx.fillStyle = C.gray; ctx.fillText(t, 0, 0); ctx.restore(); });
+      m.q.forEach((t, i) => {
+        const on = hotRow && i === sel.i;
+        ctx.textAlign = 'right'; ctx.fillStyle = on ? C.orange : C.gray; ctx.fillText(t, m.x - 5, 92 + i * cs + cs / 2 + 4);
+        m.k.forEach((_, j) => { ctx.fillStyle = m.ok(i, j) ? (on ? 'rgba(212,128,15,.75)' : 'rgba(31,95,191,.4)') : '#f1f1f1'; ctx.fillRect(m.x + j * cs, 92 + i * cs, cs - 2, cs - 2); });
+      });
+    });
+    ctx.font = '13px Times New Roman'; ctx.textAlign = 'left'; ctx.fillStyle = C.gray;
+    ctx.fillText('rows: queries (the token that reads); columns: keys (the tokens it can read). The mask hides the gray cells.', 10, 322); ctx.font = FONT;
+    const esc = w => w.replace(/</g, '&lt;').replace(/>/g, '&gt;'), m = mats[sel.m], tok = esc(m.q[sel.i]), sees = mm => esc(mm.k.filter((_, j) => mm.ok(sel.i, j)).join(', '));
+    o.innerHTML = pair ? `"<b>${tok}</b>" (decoder) reads ${sees(mats[1])} from its own output and ${sees(mats[2])} through cross-attention. Click a row to pick another token.`
+      : `"<b>${tok}</b>" reads ${sees(m)}. Click a row to pick another token.`;
+  };
+};
+
+V.llama = box => {
+  const PRE = { 'Llama 2 7B': [32, 4096, 32, 32, 11008, 32000], 'Mistral 7B': [32, 4096, 32, 8, 14336, 32000], 'Llama 3 8B': [32, 4096, 32, 8, 14336, 128256], 'Llama 3 70B': [80, 8192, 64, 8, 28672, 128256] };
+  const NS = [2048, 4096, 8192, 32768, 131072], c = canvas(box, 600, 290), { ctx } = c;
+  let cfg = PRE['Llama 3 8B'], name = 'Llama 3 8B';
+  const r = row(box); Object.keys(PRE).forEach(k => button(r, k, () => { cfg = PRE[k]; name = k; g.v = Math.log2(cfg[3]); }));
+  const r2 = row(box), g = slider(r2, 'key-value heads g', 0, 6, 1, 3, i => Math.min(cfg[2], 2 ** i));
+  const n = slider(r2, 'context n', 0, 4, 1, 2, i => NS[i].toLocaleString()), bs = slider(r2, 'sequences served at once', 1, 64, 1, 8);
+  const o = out(box);
+  const gib = b => f2(b / 2 ** 30) + ' GiB';
+  return () => {
+    const [L, d, h, g0, ff, V0] = cfg, dh = d / h, G = Math.min(h, 2 ** g.v), N0 = NS[n.v];
+    const params = 2 * V0 * d + L * (2 * d * d + 2 * d * G * dh + 3 * d * ff + 2 * d) + d, perTok = 2 * L * G * dh * 2, kv = perTok * N0 * bs.v, wts = 2 * params;
+    ctx.clearRect(0, 0, 600, 290); ctx.font = '13px Times New Roman'; ctx.textAlign = 'left'; ctx.fillStyle = C.ink;
+    ctx.fillText(`${h} query heads`, 20, 16); ctx.fillText(`${G} key-value head${G > 1 ? 's' : ''}: each serves ${h / G} query head${h / G > 1 ? 's' : ''}`, 20, 172);
+    const qw = 560 / h, kw = 560 / G, col = j => PAL[j % 5];
+    for (let i = 0; i < h; i++) {
+      const j = Math.floor(i / (h / G));
+      ctx.strokeStyle = col(j); ctx.globalAlpha = 0.5; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(20 + (i + 0.5) * qw, 44); ctx.lineTo(20 + (j + 0.5) * kw, 132); ctx.stroke(); ctx.globalAlpha = 1;
+      ctx.fillStyle = col(j); ctx.fillRect(20 + i * qw + 0.5, 24, Math.max(1, qw - 1.5), 20);
+    }
+    for (let j = 0; j < G; j++) { ctx.fillStyle = col(j); ctx.fillRect(20 + j * kw + 1, 132, Math.max(1.5, kw - 2), 22); }
+    if (G <= 16) { ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; for (let j = 0; j < G; j++) ctx.fillText('K V', 20 + (j + 0.5) * kw, 148); }
+    const mx = Math.max(kv, wts), bar = (y, v, t, cl) => { ctx.fillStyle = cl; ctx.fillRect(170, y, 410 * v / mx, 24); ctx.fillStyle = C.ink; ctx.textAlign = 'right'; ctx.fillText(t, 162, y + 17); ctx.textAlign = 'left'; ctx.fillText(gib(v), 176 + 410 * v / mx > 520 ? 176 : 176 + 410 * v / mx, y + 17); };
+    bar(196, wts, `weights (${name})`, 'rgba(120,120,120,.45)');
+    bar(234, kv, `KV cache, ${bs.v} × ${N0.toLocaleString()} tokens`, 'rgba(212,128,15,.65)');
+    ctx.fillStyle = C.gray; ctx.textAlign = 'left'; ctx.fillText('memory in 16-bit numbers', 170, 284); ctx.font = FONT;
+    o.innerHTML = `KV cache per token: 2 · ${L} · ${G} · ${dh} · 2 bytes = <b>${f2(perTok / 1024)} KiB</b>; for ${bs.v} sequences of ${N0.toLocaleString()} tokens: <b>${gib(kv)}</b>` + (G < h ? ` (with g = h = ${h}: ${gib(kv * h / G)})` : ' (ordinary multi-head attention)') + `; ${f2(params / 1e9)} B parameters` + (G !== g0 ? ` (${name} uses g = ${g0})` : '');
+  };
+};
+
+V.moe = box => {
+  const q = rng(7), TOK = [];
+  [[-1.6, 1.2, 26], [1.5, 1.3, 16], [1.2, -1.3, 12], [-1.3, -1.4, 10]].forEach(([a, b, n]) => { for (let i = 0; i < n; i++) TOK.push([a + 0.55 * gauss(q), b + 0.55 * gauss(q)]); });
+  const COL = [C.blue, C.red, C.green, C.orange, C.purple, '#17a2b8', '#8c564b', '#d63384'], T = TOK.length;
+  const c = canvas(box, 600, 320), { ctx } = c, P = { c, X: x => 150 + 44 * x, Y: y => 165 - 44 * y, ix: px => (px - 150) / 44, iy: py => (165 - py) / 44 };
+  const r = row(box), E = slider(r, 'experts E', 2, 8, 1, 6), k = slider(r, 'experts per token k', 1, 3, 1, 2), cf = slider(r, 'capacity factor', 0.5, 2, 0.05, 1.25);
+  const W = [], bias = [];
+  let key = 0, run = false;
+  const reset = () => {
+    key = E.v;
+    W.splice(0, W.length, ...range(E.v).map(i => ({ x: 1.3 * Math.cos(0.9 + i * 6.283 / E.v), y: 1.3 * Math.sin(0.9 + i * 6.283 / E.v) })));
+    bias.splice(0, bias.length, ...range(E.v).map(() => 0));
+  };
+  reset();
+  drag(P, W);
+  const r2 = row(box); button(r2, 'Balance / pause', () => (run = !run)); button(r2, 'Reset', () => { run = false; reset(); });
+  const o = out(box);
+  const route = () => TOK.map(([x, y]) => {
+    const s = W.map(w => 1.5 * (w.x * x + w.y * y)), p = soft(s);
+    const top = range(E.v).sort((a, b) => s[b] + bias[b] - (s[a] + bias[a])).slice(0, k.v);   // the bias steers the choice only
+    return { p, top };
+  });
+  loop(box, () => {
+    if (!run || key !== E.v) return;
+    const R = route(), load = range(E.v).map(i => R.filter(t => t.top.includes(i)).length), mean = T * k.v / E.v;
+    load.forEach((l, i) => (bias[i] += 0.03 * Math.sign(mean - l)));   // raise underloaded experts, lower overloaded ones
+    box.draw();
+  });
+  return () => {
+    if (key !== E.v) reset();
+    const R = route(), cap = Math.floor(cf.v * k.v * T / E.v), load = range(E.v).map(() => 0), dropped = new Set();
+    R.forEach((t, ti) => t.top.forEach(i => { if (++load[i] > cap) dropped.add(ti); }));
+    const f = load.map(l => l / (T * k.v)), Pm = range(E.v).map(i => sum(R.map(t => t.p[i])) / T), aux = E.v * sum(f.map((v, i) => v * Pm[i]));
+    ctx.clearRect(0, 0, 600, 320);
+    ctx.strokeStyle = '#eee'; ctx.beginPath(); ctx.moveTo(P.X(-3.2), P.Y(0)); ctx.lineTo(P.X(3.2), P.Y(0)); ctx.moveTo(P.X(0), P.Y(3.5)); ctx.lineTo(P.X(0), P.Y(-3.5)); ctx.stroke();
+    TOK.forEach(([x, y], ti) => { ctx.beginPath(); ctx.arc(P.X(x), P.Y(y), 4, 0, 7); ctx.fillStyle = COL[R[ti].top[0]]; ctx.fill(); if (dropped.has(ti)) { ctx.strokeStyle = C.ink; ctx.lineWidth = 1.5; ctx.stroke(); } });
+    W.forEach((w, i) => { parrow(ctx, P.X(0), P.Y(0), P.X(w.x), P.Y(w.y), COL[i], 2.5); ctx.beginPath(); ctx.arc(P.X(w.x), P.Y(w.y), 6, 0, 7); ctx.strokeStyle = COL[i]; ctx.lineWidth = 2; ctx.stroke(); });
+    const mx = Math.max(cap, ...load) * 1.1, bw = 250 / E.v, base = 260, sc = 220 / mx;
+    ctx.font = '13px Times New Roman'; ctx.textAlign = 'center';
+    load.forEach((l, i) => {
+      const x = 335 + i * bw;
+      ctx.fillStyle = COL[i]; ctx.globalAlpha = 0.6; ctx.fillRect(x + 3, base - Math.min(l, cap) * sc, bw - 6, Math.min(l, cap) * sc); ctx.globalAlpha = 1;
+      if (l > cap) { ctx.fillStyle = 'rgba(192,57,43,.85)'; ctx.fillRect(x + 3, base - l * sc, bw - 6, (l - cap) * sc); }
+      ctx.fillStyle = C.ink; ctx.fillText(l, x + bw / 2, base - l * sc - 5); ctx.fillStyle = C.gray; ctx.fillText(`E${i + 1}`, x + bw / 2, base + 16);
+    });
+    ctx.strokeStyle = C.ink; ctx.setLineDash([5, 4]); ctx.beginPath(); ctx.moveTo(332, base - cap * sc); ctx.lineTo(590, base - cap * sc); ctx.stroke(); ctx.setLineDash([]);
+    ctx.textAlign = 'left'; ctx.fillStyle = C.ink; ctx.fillText(`capacity ${cap}`, 335, base - cap * sc - 6 > 14 ? base - cap * sc - 6 : 14);
+    ctx.fillStyle = C.gray; ctx.fillText('tokens per expert (red: over capacity, dropped)', 335, 300);
+    ctx.fillText('tokens, colored by first-choice expert', 10, 314); ctx.font = FONT;
+    o.innerHTML = `${dropped.size} of ${T} tokens lose an expert to the capacity limit; busiest expert ${Math.max(...load)}, quietest ${Math.min(...load)} (fair share ${f2(T * k.v / E.v)}); balance loss E·Σ f·P = ${f2(aux)}; each token runs ${k.v} of ${E.v} expert FFNs. Drag the arrow tips to move the router.`;
+  };
+};
+
+V.mamba = box => {
+  const T = 80, SIG = { 8: 1, 30: -0.7, 55: 0.5 };
+  const c1 = canvas(box, 600, 120), P1 = plot(c1, 0, T, -1.2, 1.2, 22), c2 = canvas(box, 600, 170), P2 = plot(c2, 0, T, -1.2, 1.2, 22), c3 = canvas(box, 600, 130), P3 = plot(c3, 0, 30, 0, 1, 22);
+  const r = row(box), dl = slider(r, 'step Δ of the fixed SSM', 0.02, 2, 0.01, 0.3), sel = check(r, 'selective SSM (Mamba)', true);
+  const r2 = row(box), nz = slider(r2, 'filler noise', 0, 0.6, 0.01, 0.25);
+  let seed = 1; button(r2, 'New noise', () => seed++);
+  const o = out(box);
+  return () => {
+    const q = rng(seed * 13), x = range(T).map(t => (t in SIG ? SIG[t] : nz.v * gauss(q)));
+    const a = Math.exp(-dl.v), b = 1 - a;                              // A = -1, B = C = 1: Ā = e^{-Δ}, B̄ = 1 - e^{-Δ} (zero-order hold)
+    let h = 0;
+    const yRec = x.map(v => (h = a * h + b * v)), K = range(T).map(j => b * a ** j);
+    const yConv = range(T).map(t => sum(range(t + 1).map(j => K[j] * x[t - j])));
+    const gap = Math.max(...yRec.map((v, t) => Math.abs(v - yConv[t])));
+    h = 0;
+    const ySel = x.map((v, t) => { const A = Math.exp(-(t in SIG ? 4 : 0.002)); return (h = A * h + (1 - A) * v); });   // Δ_t: 4 on marked tokens, 0.002 elsewhere
+    P1.clear(); P1.seg(0, 0, T, 0, '#bbb');
+    x.forEach((v, t) => P1.seg(t, 0, t, v, t in SIG ? C.red : '#999', t in SIG ? 2.5 : 1.2));
+    if (sel.v) Object.keys(SIG).forEach(t => P1.text('large Δ', +t, 1.05, C.red, 'center'));
+    P1.text('input x_t: three marked tokens among filler', 1, -1.05, C.ink);
+    P2.clear(); P2.seg(0, 0, T, 0, '#bbb');
+    P2.path(yRec.map((v, t) => [t, v]), C.blue, 2);
+    yConv.forEach((v, t) => t % 3 === 0 && P2.dot(t, v, 2.5, C.ink));
+    if (sel.v) P2.path(ySel.map((v, t) => [t, v]), C.red, 2);
+    P2.text('blue: fixed SSM by recurrence, dots: the same by convolution' + (sel.v ? ', red: selective SSM' : ''), 1, -1.05, C.ink);
+    P3.clear(); P3.axes(false);
+    K.slice(0, 31).forEach((v, j) => { P3.seg(j, 0, j, v, C.blue, 2); P3.dot(j, v, 2.5, C.blue); });
+    P3.text('kernel K_j = C Ā^j B̄ of the fixed SSM', 12, 0.85, C.ink);
+    o.innerHTML = `fixed SSM: K<sub>j</sub> = (1 − e<sup>−Δ</sup>) e<sup>−jΔ</sup>, memory half-life ln 2 / Δ = <b>${f2(Math.LN2 / dl.v)}</b> steps; recurrence and convolution differ by at most ${gap.toExponential(1)}` + (sel.v ? '. The selective SSM writes on the marked tokens and holds its state through the filler.' : '');
+  };
+};
+
+V.llava = box => {
+  const IM = 64, PIX = range(IM).map(y => range(IM).map(x => sceneRGB(x * 32 / IM, y * 20 / IM, 32, 20)));
+  const c = canvas(box, 600, 300), { ctx } = c;
+  const r = row(box), res = select(r, 'resolution', ['224', '336', '448', '672'], '336'), ps = select(r, 'patch', ['14', '16'], '14'), cx = select(r, 'context', ['2048', '4096', '8192', '32768'], '4096');
+  const r2 = row(box), merge = check(r2, 'merge 2 × 2 patches into one token', false), tiles = check(r2, 'tiles: 2 × 2 grid plus an overview', false);
+  const o = out(box);
+  const rbox = (x, y, w, h, t, fill) => { ctx.fillStyle = fill; ctx.fillRect(x, y, w, h); ctx.strokeStyle = '#999'; ctx.lineWidth = 1; ctx.strokeRect(x, y, w, h); ctx.fillStyle = C.ink; ctx.textAlign = 'center'; ctx.fillText(t, x + w / 2, y + h / 2 + 5); };
+  return () => {
+    const R = +res.v, p = +ps.v, side = R / p, per = merge.v ? Math.ceil(side / 2) ** 2 : side * side, N = per * (tiles.v ? 5 : 1), text = 120, CT = +cx.v;
+    ctx.clearRect(0, 0, 600, 300); ctx.font = '13px Times New Roman';
+    const S = 150, x0 = 12, y0 = 30, sc = S / IM;
+    PIX.forEach((rw, y) => rw.forEach(([a, b, cc], x) => { ctx.fillStyle = `rgb(${a},${b},${cc})`; ctx.fillRect(x0 + x * sc, y0 + y * sc, sc + 0.3, sc + 0.3); }));
+    const lines = (n, lw, col) => { ctx.strokeStyle = col; ctx.lineWidth = lw; for (let i = 0; i <= n; i++) { const t = i * S / n; ctx.beginPath(); ctx.moveTo(x0 + t, y0); ctx.lineTo(x0 + t, y0 + S); ctx.moveTo(x0, y0 + t); ctx.lineTo(x0 + S, y0 + t); ctx.stroke(); } };
+    const g = (tiles.v ? 2 : 1) * side;
+    lines(g, 0.5, 'rgba(255,255,255,.7)');
+    if (merge.v) lines(Math.ceil(g / 2), 1.2, 'rgba(255,255,255,.95)');
+    if (tiles.v) lines(2, 2.5, C.orange);
+    ctx.fillStyle = C.ink; ctx.textAlign = 'left'; ctx.fillText(tiles.v ? `${2 * R} × ${2 * R} image, four ${R} × ${R} tiles` : `${R} × ${R} image`, x0, 20);
+    if (tiles.v) { ctx.fillText('+ overview', x0 + S + 6, y0 + 12); }
+    rbox(255, 70, 100, 44, 'ViT (CLIP)', 'rgba(31,95,191,.15)'); rbox(375, 70, 100, 44, 'projector', 'rgba(46,139,87,.18)'); rbox(495, 70, 92, 44, 'language model', 'rgba(212,128,15,.18)');
+    parrow(ctx, 172, 92, 253, 92, C.gray); parrow(ctx, 355, 92, 373, 92, C.gray); parrow(ctx, 475, 92, 493, 92, C.gray);
+    ctx.fillStyle = C.gray; ctx.textAlign = 'center'; ctx.fillText(`${N.toLocaleString()} vectors, d = 1,024`, 315, 134); ctx.fillText('→ d = 4,096', 425, 134);
+    const W = 560, used = Math.min(1, N / CT), tw = Math.min(1 - used, text / CT);
+    ctx.fillStyle = '#eee'; ctx.fillRect(20, 232, W, 30);
+    ctx.fillStyle = 'rgba(212,128,15,.7)'; ctx.fillRect(20, 232, W * used, 30); ctx.fillStyle = 'rgba(31,95,191,.6)'; ctx.fillRect(20 + W * used, 232, W * tw, 30);
+    ctx.textAlign = 'left'; ctx.fillStyle = C.ink; ctx.fillText(`context window, ${CT.toLocaleString()} tokens: image (orange), a ${text}-token question (blue), free space (gray)`, 20, 222);
+    if (N + text > CT) { ctx.fillStyle = C.red; ctx.fillText(`the image alone needs ${N.toLocaleString()} tokens: it does not fit`, 20, 284); }
+    ctx.font = FONT;
+    o.innerHTML = `image tokens = ${tiles.v ? '5 × ' : ''}(${R}/${p})²${merge.v ? ' / 4' : ''} = <b>${N.toLocaleString()}</b>, ${pct(N / CT)} of the context`;
+  };
+};
+
+/* ---------- Number formats, scaling laws, flow matching and graphs ---------- */
+// Symmetric absmax quantization with one scale per group (group = w.length gives one scale for all).
+function quantize(w, bits, group) {
+  const top = 2 ** (bits - 1) - 1, out = [];
+  for (let g = 0; g < w.length; g += group) {
+    const part = w.slice(g, g + group), s = Math.max(...part.map(Math.abs)) / top;
+    part.forEach(x => out.push(s * Math.max(-top, Math.min(top, Math.round(x / s)))));
+  }
+  return out;
+}
+
+V.floats = box => {
+  const q = rng(17), base = range(4096).map(() => 0.02 * gauss(q));
+  const c = canvas(box, 600, 340), { ctx } = c;
+  const r = row(box), bits = slider(r, 'bits', 2, 8, 1, 4), mode = select(r, 'scale', ['one for all weights', 'one per 32 weights'], 'one for all weights');
+  const outl = check(row(box), 'one outlier weight (0.4)', true);
+  const o = out(box);
+  return () => {
+    const w = base.slice(); if (outl.v) w[5] = 0.4;
+    const grp = mode.v.includes('all') ? w.length : 32, b = bits.v, wq = quantize(w, b, grp), top = 2 ** (b - 1) - 1;
+    const rmse = (bb, gg) => { const z = quantize(w, bb, gg); return Math.sqrt(sum(w.map((x, i) => (x - z[i]) ** 2)) / w.length); };
+    const P = plot({ ctx, w: 600, h: 200 }, -1, 64, -1, 1, 24), ymax = Math.max(...w.slice(0, 64).map(Math.abs), ...(grp === 32 ? [] : [Math.max(...w.map(Math.abs))])) * 1.15;
+    P.y0 = -ymax; P.y1 = ymax;
+    ctx.clearRect(0, 0, 600, 340);
+    [0, 32].forEach(g0 => {
+      const span = grp === 32 ? w.slice(g0, g0 + 32) : w, s = Math.max(...span.map(Math.abs)) / top;
+      for (let k = -top; k <= top; k++) if (Math.abs(k * s) <= ymax) P.seg(g0 - 0.5, k * s, g0 + 31.5, k * s, k ? 'rgba(31,95,191,.35)' : 'rgba(31,95,191,.6)', 1);
+    });
+    if (grp === 32) P.seg(31.5, -ymax, 31.5, ymax, '#bbb', 1, [4, 3]);
+    for (let i = 0; i < 64; i++) { P.dot(i, w[i], 3, i === 5 && outl.v ? C.red : C.ink); ctx.strokeStyle = C.orange; ctx.lineWidth = 1.5; const X = P.X(i), Y = P.Y(wq[i]); ctx.beginPath(); ctx.moveTo(X - 3, Y - 3); ctx.lineTo(X + 3, Y + 3); ctx.moveTo(X + 3, Y - 3); ctx.lineTo(X - 3, Y + 3); ctx.stroke(); }
+    ctx.font = '12px Times New Roman'; ctx.fillStyle = C.gray; ctx.textAlign = 'left'; ctx.fillText('first 64 weights: dots = true value, crosses = stored value, lines = the levels', 26, 14);
+    const Q = plot({ ctx, w: 600, h: 140 }, 1.6, 8.4, -4.6, -1, 24);
+    ctx.save(); ctx.translate(0, 200);
+    Q.seg(2, -4.6, 8, -4.6, '#999'); for (let k = 2; k <= 8; k++) Q.text(k + ' bits', k, -4.6, C.gray, 'center', 0, 14);
+    [[w.length, C.blue, 'one scale'], [32, C.green, 'scale per 32']].forEach(([gg, col, name]) => {
+      const pts = range(7).map(i => [i + 2, Math.log10(rmse(i + 2, gg))]);
+      Q.path(pts, col, 2); pts.forEach(([x, y]) => Q.dot(x, y, x === b ? 5 : 2.5, col));
+      Q.text(name, 2, pts[0][1], col, 'left', 8, gg === 32 ? 16 : -8);
+    });
+    ctx.fillStyle = C.gray; ctx.textAlign = 'left'; ctx.fillText('error (RMSE, log scale) over all 4,096 weights', 26, 6);
+    ctx.restore(); ctx.font = FONT;
+    const gb = 7e9 * b / 8 / 1e9 + (grp === 32 ? 7e9 / 32 * 2 / 1e9 : 0);
+    o.innerHTML = `${b}-bit, ${grp === 32 ? 'a scale per 32 weights' : 'one scale'}: RMSE = <b>${rmse(b, grp).toExponential(2)}</b> (weights have standard deviation 0.02); a 7-billion-parameter model would take <b>${f2(gb)} GB</b>`;
+  };
+};
+
+V.scalinglaws = box => {
+  const E = 1.8172, A = 482.01, B = 2085.43, al = 0.3478, be = 0.3658, L = (N, D) => E + A / N ** al + B / D ** be;
+  const G = (al * A / (be * B)) ** (1 / (al + be)), opt = C => { const N = G * (C / 6) ** (be / (al + be)); return [N, C / (6 * N)]; };
+  const MODELS = { 'Chinchilla 70B': [70e9, 1.4e12, 'right', -7, 16], 'Gopher 280B': [280e9, 300e9, 'left', 7, -6], 'Llama 3 8B': [8e9, 15e12, 'right', -7, -6] };
+  const c = canvas(box, 600, 330), P = plot(c, 7, 12.6, 1.8, 3.8, 30), { ctx } = c;
+  const r = row(box), lc = slider(r, 'compute budget, log₁₀ FLOPs', 18, 25, 0.1, 23.8, v => '10^' + v.toFixed(1));
+  let pick = null;
+  const r2 = row(box); Object.keys(MODELS).forEach(k => button(r2, k, () => { pick = k; const [n, d] = MODELS[k]; lc.v = Math.round(Math.log10(6 * n * d) * 10) / 10; }));
+  const o = out(box);
+  return () => {
+    const C0 = 10 ** lc.v, iso = C => x => L(10 ** x, C / (6 * 10 ** x));
+    P.clear(); P.axes();
+    for (let e = 18; e <= 25; e++) P.fn(iso(10 ** e), '#ddd', 1.2);
+    P.path(range(71).map(i => { const [n] = opt(10 ** (18 + i * 0.1)); return [Math.log10(n), L(...opt(10 ** (18 + i * 0.1)))]; }), C.orange, 1.5, false);
+    P.fn(iso(C0), C.blue, 2.5);
+    const [N, D] = opt(C0);
+    P.dot(Math.log10(N), L(N, D), 6, C.orange);
+    ctx.font = '12px Times New Roman';
+    Object.entries(MODELS).forEach(([k, [n, d, al_, dx, dy]]) => { P.dot(Math.log10(n), L(n, d), k === pick ? 5 : 3.5, k === pick ? C.red : C.ink); P.text(k, Math.log10(n), L(n, d), k === pick ? C.red : C.gray, al_, dx, dy); });
+    P.text('model size N, log₁₀ parameters', 12.6, 3.8, C.gray, 'right', -4, 12); P.text('test loss', 7, 3.8, C.gray, 'left', 4, 12); ctx.font = FONT;
+    const words = x => (x >= 1e12 ? f2(x / 1e12) + ' trillion' : x >= 1e9 ? f2(x / 1e9) + ' billion' : f2(x / 1e6) + ' million');
+    let txt = `budget 10<sup>${lc.v.toFixed(1)}</sup> FLOPs: best model <b>${words(N)}</b> parameters on <b>${words(D)}</b> tokens (${Math.round(D / N)} tokens per parameter), loss ${f2(L(N, D))}`;
+    if (pick) { const [n, d] = MODELS[pick]; txt += `. ${pick} on ${words(d)} tokens: loss ${f2(L(n, d))}, ${Math.round(d / n)} tokens per parameter`; }
+    o.innerHTML = txt;
+  };
+};
+
+V.flowmatch = box => {
+  const q = rng(23), data = range(200).map(i => { const t = Math.PI * q(); return i % 2 ? [Math.cos(t) - 0.5, Math.sin(t) - 0.25] : [0.5 - Math.cos(t), 0.25 - Math.sin(t)]; });
+  const X0 = range(300).map(() => [gauss(q), gauss(q)]);
+  const c = canvas(box, 600, 360), P = plot(c, -3.17, 3.17, -1.9, 1.9, 6), { ctx } = c;
+  const KS = [1, 2, 3, 4, 6, 8, 16, 32], r = row(box), ks = slider(r, 'Euler steps K', 0, 7, 1, 4, i => KS[i]), tt = slider(r, 'time t', 0, 1, 0.01, 1);
+  const o = out(box), cache = {};
+  const vel = ([x, y], t) => {                     // exact average velocity E[x1 - x0 | x_t] for this data set
+    let m = Infinity; const d2 = data.map(([a, b]) => { const v = (x - t * a) ** 2 + (y - t * b) ** 2; m = Math.min(m, v); return v; });
+    let sw = 0, vx = 0, vy = 0;
+    data.forEach(([a, b], i) => { const w = Math.exp(-(d2[i] - m) / (2 * (1 - t) ** 2)); sw += w; vx += w * (a - x); vy += w * (b - y); });
+    return [vx / sw / (1 - t), vy / sw / (1 - t)];
+  };
+  const paths = K => cache[K] || (cache[K] = X0.map(p => { const out = [p]; let cur = p; for (let k = 0; k < K; k++) { const v = vel(cur, k / K); cur = [cur[0] + v[0] / K, cur[1] + v[1] / K]; out.push(cur); } return out; }));
+  return () => {
+    const K = KS[ks.v], tv = tt.v, ps = paths(K), at = path => { const u = tv * K, k = Math.min(K - 1, Math.floor(u)), f = u - k; return [path[k][0] + f * (path[k + 1][0] - path[k][0]), path[k][1] + f * (path[k + 1][1] - path[k][1])]; };
+    P.clear();
+    data.forEach(([x, y]) => P.dot(x, y, 2.5, 'rgba(212,128,15,.55)'));
+    X0.forEach(([x, y]) => P.dot(x, y, 1.6, '#c8c8c8'));
+    ps.forEach(path => { const pts = path.filter((_, k) => k / K <= tv); pts.push(at(path)); P.path(pts, 'rgba(31,95,191,.18)', 1); });
+    ps.forEach(path => { const [x, y] = at(path); P.dot(x, y, 2.4, C.blue); });
+    const gap = sum(ps.map(path => { const [x, y] = path[K]; return Math.sqrt(Math.min(...data.map(([a, b]) => (x - a) ** 2 + (y - b) ** 2))); })) / ps.length;
+    o.innerHTML = `K = ${K}: after the last step, samples sit on average <b>${f2(gap)}</b> from the nearest data point` + (K === 1 ? ' (one step sends every sample to the mean of the data)' : '');
+  };
+};
+
+V.graphs = box => {
+  const E = [[0, 1], [0, 2], [1, 2], [1, 3], [3, 4], [4, 5], [4, 6], [5, 6], [6, 7]], n = 8;
+  const pos = [[45, 70], [110, 150], [45, 230], [170, 150], [230, 150], [290, 75], [290, 225], [230, 300]];
+  const A = range(n).map(() => new Array(n).fill(0)); E.forEach(([i, j]) => (A[i][j] = A[j][i] = 1));
+  const mul = (X, Y) => X.map(rw => range(n).map(j => sum(rw.map((v, m) => v * Y[m][j]))));
+  const c = canvas(box, 600, 330), { ctx } = c;
+  const ks = slider(row(box), 'walk length k', 1, 4, 1, 1);
+  const o = out(box);
+  let src = 0;
+  c.cv.addEventListener('click', e => { const b = c.cv.getBoundingClientRect(), x = (e.clientX - b.left) * 600 / b.width, y = (e.clientY - b.top) * 330 / b.height; const d = pos.map(([a, bb]) => Math.hypot(a - x, bb - y)), i = d.indexOf(Math.min(...d)); if (d[i] < 30) { src = i; closestBox(c.cv).draw(); } });
+  return () => {
+    let Ak = A; for (let k = 1; k < ks.v; k++) Ak = mul(Ak, A);
+    const dist = new Array(n).fill(-1), queue = [src]; dist[src] = 0;
+    while (queue.length) { const u = queue.shift(); for (let v = 0; v < n; v++) if (A[u][v] && dist[v] < 0) { dist[v] = dist[u] + 1; queue.push(v); } }
+    ctx.clearRect(0, 0, 600, 330); ctx.font = '14px Times New Roman'; ctx.textAlign = 'center';
+    E.forEach(([i, j]) => { ctx.strokeStyle = '#aaa'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(...pos[i]); ctx.lineTo(...pos[j]); ctx.stroke(); });
+    pos.forEach(([x, y], i) => {
+      const hit = Ak[src][i] > 0;
+      ctx.beginPath(); ctx.arc(x, y, 15, 0, 7); ctx.fillStyle = i === src ? C.orange : hit ? 'rgba(31,95,191,.25)' : '#f2f2f2'; ctx.fill(); ctx.strokeStyle = i === src ? C.orange : hit ? C.blue : '#999'; ctx.lineWidth = 2; ctx.stroke();
+      ctx.fillStyle = C.ink; ctx.fillText(i, x, y + 5); ctx.fillStyle = C.green; ctx.font = '12px Times New Roman'; ctx.fillText(`d=${dist[i]}`, x + 24, y - 12); ctx.font = '14px Times New Roman';
+    });
+    const cs = 27, x0 = 370, y0 = 60, mx = Math.max(...Ak.flat());
+    ctx.fillStyle = C.ink; ctx.fillText(['A', 'A²', 'A³', 'A⁴'][ks.v - 1], x0 + 4 * cs, 30);
+    for (let i = 0; i < n; i++) {
+      ctx.fillStyle = i === src ? C.orange : C.gray; ctx.fillText(i, x0 - 12, y0 + i * cs + 18); ctx.fillStyle = C.gray; ctx.fillText(i, x0 + i * cs + cs / 2, y0 - 8);
+      for (let j = 0; j < n; j++) {
+        const v = Ak[i][j];
+        ctx.fillStyle = v ? `rgba(31,95,191,${0.15 + 0.6 * v / mx})` : '#f5f5f5'; ctx.fillRect(x0 + j * cs, y0 + i * cs, cs - 2, cs - 2);
+        ctx.fillStyle = C.ink; ctx.fillText(v, x0 + j * cs + cs / 2 - 1, y0 + i * cs + 18);
+      }
+    }
+    ctx.strokeStyle = C.orange; ctx.lineWidth = 2; ctx.strokeRect(x0 - 1, y0 + src * cs - 1, n * cs, cs);
+    ctx.font = FONT;
+    o.innerHTML = `node ${src}: degree ${sum(A[src])}; walks of length ${ks.v} from it: ${Ak[src].map((v, j) => v ? `${v} to node ${j}` : '').filter(Boolean).join(', ')}. Green labels: shortest distances from node ${src} (BFS). Click a node to start from it.`;
+  };
+};
+
+V.pagerank = box => {
+  const links = [[1, 2], [2], [0], [2], [2, 3], [4], [4, 5], []], n = 8;
+  const pos = [[70, 85], [150, 40], [130, 175], [60, 270], [190, 270], [290, 240], [300, 120], [300, 30]];
+  const c = canvas(box, 600, 320), { ctx } = c;
+  const r = row(box), al = slider(r, 'α (follow a link)', 0, 0.99, 0.01, 0.85);
+  let pi = new Array(n).fill(1 / n), it = 0, page = 0, visits = new Array(n).fill(0), walk = false, lastA = al.v;
+  const step = () => { const a = al.v, nxt = new Array(n).fill((1 - a) / n); pi.forEach((p, i) => (links[i].length ? links[i].forEach(j => (nxt[j] += a * p / links[i].length)) : range(n).forEach(j => (nxt[j] += a * p / n)))); const ch = sum(nxt.map((v, i) => Math.abs(v - pi[i]))); pi = nxt; it++; return ch; };
+  let change = 0;
+  const r2 = row(box);
+  button(r2, 'Step', () => (change = step()));
+  button(r2, 'Converge', () => { for (let k = 0; k < 500 && (change = step()) > 1e-12; k++); });
+  button(r2, 'Reset', () => { pi = new Array(n).fill(1 / n); it = 0; change = 0; visits.fill(0); });
+  button(r2, 'Walk / pause the surfer', () => (walk = !walk));
+  const o = out(box), q = rng(5);
+  for (let k = 0; k < 500 && (change = step()) > 1e-12; k++);   // open on the converged ranking
+  loop(box, () => { if (!walk) return; for (let k = 0; k < 40; k++) { const L = links[page]; page = q() < al.v && L.length ? L[Math.floor(q() * L.length)] : Math.floor(q() * n); visits[page]++; } box.draw(); });
+  return () => {
+    if (al.v !== lastA) { lastA = al.v; pi = new Array(n).fill(1 / n); it = 0; visits.fill(0); for (let k = 0; k < 500 && (change = step()) > 1e-12; k++); }   // a new α: converge again
+    ctx.clearRect(0, 0, 600, 320); ctx.font = '13px Times New Roman'; ctx.textAlign = 'center';
+    const rad = i => 10 + 60 * Math.sqrt(pi[i] / 1.5);
+    links.forEach((L, i) => L.forEach(j => {
+      const [x1, y1] = pos[i], [x2, y2] = pos[j], d = Math.hypot(x2 - x1, y2 - y1), ux = (x2 - x1) / d, uy = (y2 - y1) / d;
+      parrow(ctx, x1 + ux * rad(i), y1 + uy * rad(i), x2 - ux * (rad(j) + 2), y2 - uy * (rad(j) + 2), '#999', 1.3);
+    }));
+    pos.forEach(([x, y], i) => {
+      ctx.beginPath(); ctx.arc(x, y, rad(i), 0, 7); ctx.fillStyle = 'rgba(31,95,191,.18)'; ctx.fill(); ctx.strokeStyle = walk && i === page ? C.orange : C.blue; ctx.lineWidth = walk && i === page ? 3 : 1.5; ctx.stroke();
+      ctx.fillStyle = C.ink; ctx.fillText(i, x, y + 5);
+    });
+    ctx.fillStyle = C.gray; ctx.fillText('page 7: no links out', 300, 72);
+    const tot = sum(visits) || 1, bw = 26, x0 = 380, base = 270, sc = 480;
+    for (let i = 0; i < n; i++) {
+      const x = x0 + i * bw;
+      ctx.fillStyle = 'rgba(31,95,191,.6)'; ctx.fillRect(x + 3, base - sc * pi[i], bw - 8, sc * pi[i]);
+      if (sum(visits)) { ctx.strokeStyle = C.orange; ctx.lineWidth = 2; ctx.strokeRect(x + 3, base - sc * visits[i] / tot, bw - 8, sc * visits[i] / tot); }
+      ctx.fillStyle = C.gray; ctx.fillText(i, x + bw / 2 - 1, base + 15);
+    }
+    ctx.textAlign = 'left'; ctx.fillStyle = C.ink; ctx.fillText('PageRank (blue) and the surfer\'s visit shares (orange)', 370, 300);
+    ctx.font = FONT;
+    const rank = range(n).sort((a, b) => pi[b] - pi[a]);
+    o.innerHTML = `iteration ${it}` + (it ? `, change ‖π<sub>t</sub> − π<sub>t−1</sub>‖₁ = ${change.toExponential(1)}; ranking: ${rank.join(' > ')}` : ': every page starts at 1/8') + (sum(visits) ? `; the surfer has made ${sum(visits).toLocaleString()} moves` : '');
+  };
+};
