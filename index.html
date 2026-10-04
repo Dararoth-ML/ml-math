@@ -20,6 +20,7 @@
   nav.toc .lvl { display: none; }
   nav.toc .num { color: #777; margin-right: .45em; }
   main { max-width: 780px; padding: 32px 0 120px; min-width: 0; }
+  .byline { color: var(--muted); margin-top: 0; }
   h1 { font-size: 2.3em; line-height: 1.15; margin: 0 0 .3em; font-weight: normal; }
   h2 { font-size: 1.75em; font-weight: normal; border-top: 3px double var(--ink); padding-top: .6em; margin-top: 2.6em; font-variant: small-caps; letter-spacing: .02em; }
   h3 { font-size: 1.35em; font-weight: normal; font-style: italic; margin-top: 2em; border-bottom: 1px solid var(--rule); padding-bottom: .2em; }
@@ -75,6 +76,7 @@
 <main>
 <header>
 <h1>Mathematics and Algorithms for Machine Learning</h1>
+<p class="byline">Built by <a href="https://github.com/Dararoth-ML">Eng Dararoth</a></p>
 <p>A study notebook for engineers. Part I teaches the mathematics, starting from functions and ending at information theory. Parts II to IX use that mathematics to explain the algorithms: classic machine learning, deep learning, natural language processing, computer vision, generative models, reinforcement learning, graph networks and geospatial analysis.</p>
 <p>Each topic has a short explanation, the key formulas, a figure you can play with, and two collapsed Python blocks: one built from scratch, one that calls a standard library. Change a slider, drag a point, and watch the formula respond; open a code block when you need the implementation. Read it from top to bottom: each topic builds on the ones above it, and each chapter runs from easy to hard. The labels tell you the level:</p>
 <p class="legend"><span class="lvl l1">Beginner</span> <span class="lvl l2">Intermediate</span> <span class="lvl l3">Advanced</span> <span class="lvl l4">Expert</span></p>
@@ -4488,6 +4490,7 @@ print("block CV ", round(score(GroupKFold(5), groups=groups), 3))               
 <li>Original papers worth reading: Chen and Guestrin, "XGBoost" (2016); Vaswani et al., "Attention Is All You Need" (2017); He et al., "Deep Residual Learning" (2015); Kingma and Ba, "Adam" (2014); Ho et al., "Denoising Diffusion Probabilistic Models" (2020); Schulman et al., "Proximal Policy Optimization" (2017); Rafailov et al., "Direct Preference Optimization" (2023).</li>
 </ul>
 
+<footer class="byline"><hr>Built by <a href="https://github.com/Dararoth-ML">Eng Dararoth</a>. Source on <a href="https://github.com/Dararoth-ML/ml-math">GitHub</a>.</footer>
 </main>
 </div>
 <script src="katex/katex.min.js"></script>
